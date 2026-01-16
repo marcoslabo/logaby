@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logaby - Track Baby With Your Voice</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description"
+        content="No tapping. No menus. No fumbling with your phone while holding a baby. Just say 'Hey Siri, tell Logaby...' and it's logged.">
+    <meta name="keywords" content="baby tracker, voice logging, siri baby app, hands-free baby tracking, parenting app">
+
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Logaby - Track Baby With Your Voice">
+    <meta property="og:description"
+        content="Hands-free baby tracking with Siri and Google Assistant. Join the waitlist for 90% off (first 50 users only).">
+    <meta property="og:image" content="https://yourdomain.com/og-image.jpg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Caveat:wght@500;600&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Background Shapes -->
+    <div class="bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                        d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5z" />
+                    <path
+                        d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
+                </svg>
+            </div>
+            Logaby
+        </div>
+        <a href="#waitlist" class="nav-cta">Join Waitlist</a>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-content">
+            <p class="hero-tagline">Hands full? Just talk.</p>
+            <h1>Track Baby With <span>Your Voice</span></h1>
+            <p class="hero-description">No tapping. No menus. No fumbling with your phone while holding a baby. Just say
+                "Hey Siri, tell Logaby..." and it's logged. Track feedings, diapers, sleep, pumping, and more—then share
+                reports with your pediatrician.</p>
+
+            <!-- Scarcity Badge -->
+            <div class="scarcity-badge" id="scarcityBadge">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                </svg>
+                <span id="scarcityText">🔥 Only <strong id="spotsLeft">50</strong> early bird spots left (90%
+                    off!)</span>
+            </div>
+
+            <form class="email-form" id="waitlistForm">
+                <input type="email" id="emailInput" placeholder="Enter your email" required aria-label="Email address">
+                <button type="submit" id="submitBtn">Get Early Access</button>
+            </form>
+            <p class="form-note" id="formNote">Join the waitlist. We'll notify you when we launch.</p>
+            <div class="form-message" id="formMessage"></div>
+        </div>
+
+        <!-- iPhone Mockup -->
+        <div class="iphone-mockup">
+            <div class="iphone-frame">
+                <div class="iphone-notch"></div>
+                <div class="iphone-screen">
+                    <!-- Screen 1: Voice Command -->
+                    <div class="screen-content active" data-screen="1">
+                        <div class="siri-wave">
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                            <div class="wave-bar"></div>
+                        </div>
+                        <p class="voice-command">"Hey Siri, tell Logaby pumped 6oz"</p>
+                        <div class="siri-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <circle cx="12" cy="12" r="10" opacity="0.2" />
+                                <path
+                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Screen 2: Logging -->
+                    <div class="screen-content" data-screen="2">
+                        <div class="success-checkmark">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                            </svg>
+                        </div>
+                        <h3 class="screen-title">Logged!</h3>
+                        <div class="activity-card">
+                            <div class="activity-icon">🤱</div>
+                            <div class="activity-details">
+                                <p class="activity-type">Pumping</p>
+                                <p class="activity-amount">6 oz</p>
+                                <p class="activity-time">Just now</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Screen 3: Dashboard -->
+                    <div class="screen-content" data-screen="3">
+                        <h3 class="screen-title">Today's Summary</h3>
+                        <div class="mini-stats">
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">24oz</div>
+                                <div class="mini-stat-label">Feeding</div>
+                            </div>
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">14h</div>
+                                <div class="mini-stat-label">Sleep</div>
+                            </div>
+                            <div class="mini-stat">
+                                <div class="mini-stat-value">6</div>
+                                <div class="mini-stat-label">Diapers</div>
+                            </div>
+                        </div>
+                        <div class="recent-activities">
+                            <div class="recent-item">🤱 Pumped 6oz • 2m ago</div>
+                            <div class="recent-item">🍼 4oz bottle • 1h ago</div>
+                            <div class="recent-item">� Nap ended • 2h ago</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="mockup-caption">See it in action ↑</p>
+        </div>
+    </section>
+
+    <!-- Problem Section -->
+    <section class="problem-section">
+        <div class="problem-container">
+            <h2 class="section-title">Sound Familiar?</h2>
+            <p class="section-subtitle">You're not alone. Every parent has been there.</p>
+
+            <div class="problems-grid">
+                <div class="problem-card">
+                    <div class="problem-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                        </svg>
+                    </div>
+                    <h3>"Wait, when did she eat last?"</h3>
+                    <p>It's 3am. You're exhausted. Your partner asks when the last feeding was. You have no idea. You
+                        forgot to write it down... again.</p>
+                </div>
+                <div class="problem-card">
+                    <div class="problem-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z" />
+                        </svg>
+                    </div>
+                    <h3>"Let me just unlock my phone..."</h3>
+                    <p>Baby's crying. You're holding them with one hand, trying to unlock your phone with your chin,
+                        navigate to the app, and tap the right buttons. It shouldn't be this hard.</p>
+                </div>
+                <div class="problem-card">
+                    <div class="problem-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z" />
+                        </svg>
+                    </div>
+                    <h3>"I forgot to log it"</h3>
+                    <p>You finally got baby to sleep. You sit down, exhausted. Then you realize you forgot to track the
+                        feeding, the diaper change, and when they fell asleep. Now you're guessing.</p>
+                </div>
+                <div class="problem-card">
+                    <div class="problem-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+                        </svg>
+                    </div>
+                    <h3>"How much has she been eating?"</h3>
+                    <p>The pediatrician asks about feeding patterns. You scramble through scattered notes, trying to
+                        piece together the last week. You wish you had better records.</p>
+                </div>
+            </div>
+
+            <div class="problem-cta">
+                <h3>There's a better way.</h3>
+                <p>What if you could track everything without ever touching your phone?</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features">
+        <h2 class="section-title">Everything You Need to Track Your Baby</h2>
+        <p class="section-subtitle">Built for exhausted parents who don't have a free hand.</p>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5z" />
+                        <path
+                            d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" />
+                    </svg>
+                </div>
+                <h3>Voice Logging</h3>
+                <p>Works with Siri and Google Assistant. Log feedings, diapers, sleep, pumping, and more—hands-free.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm4.2 14.2L11 13V7h1.5v5.2l4.5 2.7-.8 1.3z" />
+                    </svg>
+                </div>
+                <h3>Smart Reminders</h3>
+                <p>Never miss a feeding or medication. Set custom reminders that work for your baby's schedule.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+                    </svg>
+                </div>
+                <h3>Pumping Tracker</h3>
+                <p>Track pumping sessions with amounts, times, and storage details. Perfect for breastfeeding moms.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4zm2.5 2.1h-15V5h15v14.1zm0-16.1h-15c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h15c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z" />
+                    </svg>
+                </div>
+                <h3>Reports & Insights</h3>
+                <p>See patterns and trends. Export detailed reports to share with your pediatrician.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z" />
+                    </svg>
+                </div>
+                <h3>Family Sync</h3>
+                <p>Mom, Dad, grandma, nanny—everyone stays on the same page in real-time.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path
+                            d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+                    </svg>
+                </div>
+                <h3>Healthcare Sharing</h3>
+                <p>Generate professional reports to share with doctors, lactation consultants, and specialists.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works">
+        <h2 class="section-title">How It Works</h2>
+        <p class="section-subtitle">Set up once. Use forever. No phone fumbling required.</p>
+
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Download and Set Up (30 seconds)</h3>
+                    <p>Install Logaby, then add a Siri Shortcut or Google Assistant routine. You do this once.</p>
+                    <div class="platform-note">
+                        <div class="platform-badge">
+                            <svg viewBox="0 0 24 24">
+                                <path
+                                    d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
+                            </svg>
+                            Works with Siri
+                        </div>
+                        <div class="platform-badge">
+                            <svg viewBox="0 0 24 24">
+                                <path
+                                    d="M6 18c0 .55.45 1 1 1h1v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h2v3.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5V19h1c.55 0 1-.45 1-1V8H6v10zM3.5 8C2.67 8 2 8.67 2 9.5v7c0 .83.67 1.5 1.5 1.5S5 17.33 5 16.5v-7C5 8.67 4.33 8 3.5 8zm17 0c-.83 0-1.5.67-1.5 1.5v7c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-7c0-.83-.67-1.5-1.5-1.5zm-4.97-5.84l1.3-1.3c.2-.2.2-.51 0-.71-.2-.2-.51-.2-.71 0l-1.48 1.48C13.85 1.23 12.95 1 12 1c-.96 0-1.86.23-2.66.63L7.85.15c-.2-.2-.51-.2-.71 0-.2.2-.2.51 0 .71l1.31 1.31C6.97 3.26 6 5.01 6 7h12c0-1.99-.97-3.75-2.47-4.84zM10 5H9V4h1v1zm5 0h-1V4h1v1z" />
+                            </svg>
+                            Works with Google
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Just Speak</h3>
+                    <p>Holding baby at 3am? Don't reach for your phone. Just say:</p>
+                    <div class="voice-example">
+                        <span>iPhone:</span> "Hey Siri, tell Logaby 4oz bottle"
+                    </div>
+                    <div class="voice-example">
+                        <span>Android:</span> "Hey Google, tell Logaby wet diaper"
+                    </div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>It's Logged</h3>
+                    <p>Logaby parses what you said, categorizes it, timestamps it, and saves it. Check the dashboard
+                        anytime to see patterns or share with your pediatrician.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Preview -->
+    <section class="dashboard-section">
+        <h2 class="section-title">Your Day, At a Glance</h2>
+        <p class="section-subtitle">No more "wait, when did she eat last?"</p>
+
+        <div class="dashboard-preview">
+            <div class="dashboard-header">
+                <div class="dashboard-title">Today's Summary</div>
+                <div class="dashboard-date">Wednesday, Jan 15</div>
+            </div>
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <div class="stat-label-top">Feeding</div>
+                    <div class="stat-value">24</div>
+                    <div class="stat-unit">oz total</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label-top">Pumping</div>
+                    <div class="stat-value">18</div>
+                    <div class="stat-unit">oz pumped</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label-top">Sleep</div>
+                    <div class="stat-value">14</div>
+                    <div class="stat-unit">hours</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label-top">Diapers</div>
+                    <div class="stat-value">6</div>
+                    <div class="stat-unit">changes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label-top">Weight</div>
+                    <div class="stat-value">12.4</div>
+                    <div class="stat-unit">lbs</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="pricing">
+        <h2 class="section-title">Simple Pricing</h2>
+        <p class="section-subtitle">No subscriptions. No hidden fees. Pay once, use forever.</p>
+
+        <div class="price-card">
+            <div class="price-badge">One-Time Purchase</div>
+            <div class="price-amount">$29<span>.99</span></div>
+            <p class="price-note">Lifetime access. No monthly fees. Ever.</p>
+
+            <ul class="price-features">
+                <li>
+                    <span class="check-icon"><svg viewBox="0 0 24 24">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                        </svg></span>
+                    Unlimited voice logging (Siri & Google)
+                </li>
+                <li>
+                    <span class="check-icon"><svg viewBox="0 0 24 24">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                        </svg></span>
+                    Track feedings, diapers, sleep, pumping
+                </li>
+                <li>
+                    <span class="check-icon"><svg viewBox="0 0 24 24">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                        </svg></span>
+                    Smart reminders & notifications
+                </li>
+                <li>
+                    <span class="check-icon"><svg viewBox="0 0 24 24">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                        </svg></span>
+                    Multi-caregiver family sync
+                </li>
+                <li>
+                    <span class="check-icon"><svg viewBox="0 0 24 24">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                        </svg></span>
+                    Reports & insights dashboard
+                </li>
+                <li>
+                    <span class="check-icon"><svg viewBox="0 0 24 24">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                        </svg></span>
+                    Export reports for healthcare providers
+                </li>
+                <li>
+                    <span class="check-icon"><svg viewBox="0 0 24 24">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                        </svg></span>
+                    Free updates forever
+                </li>
+            </ul>
+
+            <button class="price-cta"
+                onclick="document.getElementById('waitlistForm').scrollIntoView({behavior: 'smooth'})">Join the
+                Waitlist</button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 Logaby. Made for exhausted parents everywhere.</p>
+        <p style="margin-top: 8px;"><a href="#">Privacy</a> · <a href="#">Terms</a> · <a href="#">Contact</a></p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
