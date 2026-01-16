@@ -1,7 +1,7 @@
 // Configuration - Replace these with your actual ConvertKit credentials
 const CONFIG = {
-    CONVERTKIT_FORM_ID: 'YOUR_FORM_ID_HERE', // Get this from ConvertKit
-    CONVERTKIT_API_KEY: 'YOUR_API_KEY_HERE', // Get this from ConvertKit
+    CONVERTKIT_FORM_ID: '8981806', // Your Kit form ID
+    CONVERTKIT_API_KEY: 'YOUR_API_KEY_HERE', // REPLACE THIS with your API Secret from Kit
     EARLY_BIRD_LIMIT: 50, // First 50 users get 90% off
     SUPABASE_URL: '', // Optional: for analytics tracking
     SUPABASE_ANON_KEY: '' // Optional: for analytics tracking
