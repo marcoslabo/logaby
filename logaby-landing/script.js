@@ -161,14 +161,14 @@ async function subscribeToWaitlist(email) {
             }
 
         } else {
-            showMessage('Unable to subscribe. Please try again.', 'error');
+            // Handle errors
+            showMessage(`Error: ${data.error || 'Unable to subscribe. Please try again.'}`, 'error');
         }
-    }
 
     } catch (error) {
-    console.error('Brevo API error:', error);
-    showMessage('Network error. Please check your connection and try again.', 'error');
-}
+        console.error('Subscription error:', error);
+        showMessage('Network error. Please check your connection and try again.', 'error');
+    }
 }
 
 /**
