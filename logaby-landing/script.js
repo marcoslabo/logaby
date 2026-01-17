@@ -134,20 +134,24 @@ async function subscribeToWaitlist(email) {
             localStorage.setItem('logaby_signup_count', currentSignupCount.toString());
             updateScarcityUI();
 
+            // Trigger confetti celebration!
+            if (typeof confetti !== 'undefined') {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            }
+
             // Show success message
             if (data.duplicate) {
                 showMessage(
                     `✅ You're already on the waitlist! Check your email for updates.`,
                     'success'
                 );
-            } else if (isEarlyBird) {
-                showMessage(
-                    `🎉 You're in! You're #${signupNumber} on the list and locked in for 90% off at launch. Check your email!`,
-                    'success'
-                );
             } else {
                 showMessage(
-                    `✅ You're on the waitlist! We'll notify you when we launch. Check your email!`,
+                    `🎉 You're in! Welcome to the Logaby waitlist. Check your email for updates!`,
                     'success'
                 );
             }
@@ -222,6 +226,8 @@ function showMessage(message, type) {
     const formMessage = document.getElementById('formMessage');
     formMessage.textContent = message;
     formMessage.className = `form-message ${type}`;
+    formMessage.style.display = 'block'; // Make the message visible
+    formMessage.style.marginTop = '16px'; // Add spacing
 
     // Auto-hide success messages after 10 seconds
     if (type === 'success') {
