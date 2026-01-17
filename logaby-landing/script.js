@@ -1,7 +1,5 @@
-// Configuration - Replace these with your actual ConvertKit credentials
+// Configuration
 const CONFIG = {
-    CONVERTKIT_FORM_ID: '8981806', // Your Kit form ID
-    CONVERTKIT_API_KEY: 'U4au9-YiehKkDMXZRfK9-73TbkGmFoYAPLdPDyI_CEw', // REPLACE THIS with your API Secret from Kit
     EARLY_BIRD_LIMIT: 50, // First 50 users get 90% off
     SUPABASE_URL: '', // Optional: for analytics tracking
     SUPABASE_ANON_KEY: '' // Optional: for analytics tracking
@@ -104,15 +102,14 @@ function setupFormHandler() {
 }
 
 /**
- * Subscribe email to ConvertKit
+ * Subscribe email to Brevo
  */
 async function subscribeToWaitlist(email) {
     const formMessage = document.getElementById('formMessage');
 
-    // Check if ConvertKit is configured
-    if (CONFIG.CONVERTKIT_FORM_ID === 'YOUR_FORM_ID_HERE' ||
-        CONFIG.CONVERTKIT_API_KEY === 'YOUR_API_KEY_HERE') {
-        showMessage('⚠️ ConvertKit not configured yet. Check the README for setup instructions.', 'error');
+    // Check if Brevo is configured
+    if (!CONFIG.BREVO_API_KEY || !CONFIG.BREVO_LIST_ID) {
+        showMessage('⚠️ Brevo not configured yet. Check the README for setup instructions.', 'error');
         return;
     }
 
@@ -122,27 +119,29 @@ async function subscribeToWaitlist(email) {
         const signupNumber = currentSignupCount;
         const isEarlyBird = signupNumber <= CONFIG.EARLY_BIRD_LIMIT;
 
-        // Subscribe to ConvertKit
-        const response = await fetch(`https://api.convertkit.com/v3/forms/${CONFIG.CONVERTKIT_FORM_ID}/subscribe`, {
+        // Subscribe to Brevo
+        const response = await fetch('https://api.brevo.com/v3/contacts', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'accept': 'application/json',
+                'api-key': CONFIG.BREVO_API_KEY,
+                'content-type': 'application/json'
             },
             body: JSON.stringify({
-                api_key: CONFIG.CONVERTKIT_API_KEY,
                 email: email,
-                fields: {
-                    signup_number: signupNumber,
-                    early_bird: isEarlyBird
+                listIds: [CONFIG.BREVO_LIST_ID],
+                attributes: {
+                    SIGNUP_NUMBER: signupNumber,
+                    EARLY_BIRD: isEarlyBird,
+                    SOURCE: 'Landing Page'
                 },
-                tags: isEarlyBird ? [5678901, 5678902] : [5678902] // Replace with your actual tag IDs
-                // Tag IDs: 5678901 = 'early-bird', 5678902 = 'waitlist' (example IDs)
+                updateEnabled: false
             })
         });
 
         const data = await response.json();
 
-        if (response.ok && data.subscription) {
+        if (response.ok || response.status === 201) {
             // Success!
             localStorage.setItem('logaby_signup_count', currentSignupCount.toString());
             updateScarcityUI();
@@ -165,20 +164,28 @@ async function subscribeToWaitlist(email) {
 
             // Optional: Track in Supabase for analytics
             if (CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY) {
-                trackInSupabase(email, signupNumber, data.subscription.id);
+                trackInSupabase(email, signupNumber, data.id);
             }
 
         } else {
-            // Handle ConvertKit errors
-            if (data.error && data.message) {
-                showMessage(`Error: ${data.message}`, 'error');
+            // Handle Brevo errors
+            if (data.message) {
+                // Contact already exists - this is actually success!
+                if (data.code === 'duplicate_parameter') {
+                    showMessage(
+                        `✅ You're already on the waitlist! Check your email for updates.`,
+                        'success'
+                    );
+                } else {
+                    showMessage(`Error: ${data.message}`, 'error');
+                }
             } else {
                 showMessage('Unable to subscribe. Please try again.', 'error');
             }
         }
 
     } catch (error) {
-        console.error('ConvertKit API error:', error);
+        console.error('Brevo API error:', error);
         showMessage('Network error. Please check your connection and try again.', 'error');
     }
 }
@@ -234,8 +241,6 @@ function showMessage(message, type) {
     const formMessage = document.getElementById('formMessage');
     formMessage.textContent = message;
     formMessage.className = `form-message ${type}`;
-    formMessage.style.display = 'block'; // Make the message visible
-    formMessage.style.marginTop = '16px'; // Add spacing
 
     // Auto-hide success messages after 10 seconds
     if (type === 'success') {
