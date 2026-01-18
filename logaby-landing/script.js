@@ -1,6 +1,6 @@
 // Configuration
 const CONFIG = {
-    EARLY_BIRD_LIMIT: 50, // First 50 users get 90% off
+    EARLY_BIRD_LIMIT: 50, // First 50 users get early access
     SUPABASE_URL: '', // Optional: for analytics tracking
     SUPABASE_ANON_KEY: '' // Optional: for analytics tracking
 };
@@ -57,7 +57,7 @@ function updateScarcityUI() {
     const scarcityBadge = document.getElementById('scarcityBadge');
 
     if (spotsLeft > 0) {
-        scarcityText.innerHTML = `🔥 Only <strong>${spotsLeft}</strong> early bird spots left (90% off!)`;
+        scarcityText.innerHTML = `🔥 Only <strong>${spotsLeft}</strong> early access spots left!`;
         scarcityBadge.style.display = 'inline-flex';
     } else {
         scarcityText.innerHTML = `Join the waitlist for launch updates`;
