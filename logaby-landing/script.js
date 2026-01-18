@@ -52,18 +52,12 @@ async function initializeScarcityCounter() {
  * Update the scarcity badge UI
  */
 function updateScarcityUI() {
-    const spotsLeft = CONFIG.EARLY_BIRD_LIMIT - currentSignupCount;
     const scarcityText = document.getElementById('scarcityText');
     const scarcityBadge = document.getElementById('scarcityBadge');
 
-    if (spotsLeft > 0) {
-        scarcityText.innerHTML = `🔥 Only <strong>${spotsLeft}</strong> early access spots left!`;
-        scarcityBadge.style.display = 'inline-flex';
-    } else {
-        scarcityText.innerHTML = `Join the waitlist for launch updates`;
-        scarcityBadge.style.background = 'linear-gradient(135deg, #E8E0F0 0%, #D0C4E0 100%)';
-        scarcityBadge.style.borderColor = '#9B7FB8';
-    }
+    // Simple message without countdown
+    scarcityText.innerHTML = `🔥 Join the waitlist for early access!`;
+    scarcityBadge.style.display = 'inline-flex';
 }
 
 /**
