@@ -16,6 +16,10 @@ export default async function handler(req, res) {
     const BREVO_API_KEY = process.env.BREVO_API_KEY;
     const BREVO_LIST_ID = process.env.BREVO_LIST_ID;
 
+    // Debug: Check if key is loaded (log first/last chars only)
+    console.log('Key loaded:', BREVO_API_KEY ? `${BREVO_API_KEY.substring(0, 8)}...${BREVO_API_KEY.slice(-6)}` : 'NOT FOUND');
+    console.log('List ID:', BREVO_LIST_ID);
+
     if (!BREVO_API_KEY || !BREVO_LIST_ID) {
         console.error('Brevo credentials not configured');
         return res.status(500).json({ error: 'Server configuration error' });
