@@ -1,8 +1,6 @@
-// Configuration - Brevo (formerly Sendinblue) credentials
+// Configuration
 const CONFIG = {
-    BREVO_API_KEY: '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',
-    BREVO_LIST_ID: 3, // Logaby Waitlist
-    EARLY_BIRD_LIMIT: 50, // First 50 users get 90% off
+    EARLY_BIRD_LIMIT: 50, // First 50 users get early access
     SUPABASE_URL: '', // Optional: for analytics tracking
     SUPABASE_ANON_KEY: '' // Optional: for analytics tracking
 };
@@ -54,18 +52,12 @@ async function initializeScarcityCounter() {
  * Update the scarcity badge UI
  */
 function updateScarcityUI() {
-    const spotsLeft = CONFIG.EARLY_BIRD_LIMIT - currentSignupCount;
     const scarcityText = document.getElementById('scarcityText');
     const scarcityBadge = document.getElementById('scarcityBadge');
 
-    if (spotsLeft > 0) {
-        scarcityText.innerHTML = `🔥 Only <strong>${spotsLeft}</strong> early bird spots left (90% off!)`;
-        scarcityBadge.style.display = 'inline-flex';
-    } else {
-        scarcityText.innerHTML = `Join the waitlist for launch updates`;
-        scarcityBadge.style.background = 'linear-gradient(135deg, #E8E0F0 0%, #D0C4E0 100%)';
-        scarcityBadge.style.borderColor = '#9B7FB8';
-    }
+    // Launch message - AI powered
+    scarcityText.innerHTML = `🤖 Powered by AI • Free to download!`;
+    scarcityBadge.style.display = 'inline-flex';
 }
 
 /**
@@ -105,15 +97,10 @@ function setupFormHandler() {
 
 /**
  * Subscribe email to Brevo
+ * Subscribe email to waitlist via serverless function
  */
 async function subscribeToWaitlist(email) {
     const formMessage = document.getElementById('formMessage');
-
-    // Check if Brevo is configured
-    if (!CONFIG.BREVO_API_KEY || !CONFIG.BREVO_LIST_ID) {
-        showMessage('⚠️ Brevo not configured yet. Check the README for setup instructions.', 'error');
-        return;
-    }
 
     try {
         // Increment signup count
@@ -121,42 +108,44 @@ async function subscribeToWaitlist(email) {
         const signupNumber = currentSignupCount;
         const isEarlyBird = signupNumber <= CONFIG.EARLY_BIRD_LIMIT;
 
-        // Subscribe to Brevo
-        const response = await fetch('https://api.brevo.com/v3/contacts', {
+        // Call our serverless function
+        const response = await fetch('/api/subscribe', {
             method: 'POST',
             headers: {
-                'accept': 'application/json',
-                'api-key': CONFIG.BREVO_API_KEY,
-                'content-type': 'application/json'
+                'Content-Type': 'application/json',
             },
             body: JSON.stringify({
                 email: email,
-                listIds: [CONFIG.BREVO_LIST_ID],
-                attributes: {
-                    SIGNUP_NUMBER: signupNumber,
-                    EARLY_BIRD: isEarlyBird,
-                    SOURCE: 'Landing Page'
-                },
-                updateEnabled: false
+                signupNumber: signupNumber,
+                isEarlyBird: isEarlyBird
             })
         });
 
         const data = await response.json();
 
-        if (response.ok || response.status === 201) {
+        if (response.ok && data.success) {
             // Success!
             localStorage.setItem('logaby_signup_count', currentSignupCount.toString());
             updateScarcityUI();
 
+            // Trigger confetti celebration!
+            if (typeof confetti !== 'undefined') {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            }
+
             // Show success message
-            if (isEarlyBird) {
+            if (data.duplicate) {
                 showMessage(
-                    `🎉 You're in! You're #${signupNumber} on the list and locked in for 90% off at launch. Check your email!`,
+                    `✅ You're already on the waitlist! Check your email for updates.`,
                     'success'
                 );
             } else {
                 showMessage(
-                    `✅ You're on the waitlist! We'll notify you when we launch. Check your email!`,
+                    `🎉 You're in! Welcome to the Logaby waitlist. Check your email for updates!`,
                     'success'
                 );
             }
@@ -170,24 +159,12 @@ async function subscribeToWaitlist(email) {
             }
 
         } else {
-            // Handle Brevo errors
-            if (data.message) {
-                // Contact already exists - this is actually success!
-                if (data.code === 'duplicate_parameter') {
-                    showMessage(
-                        `✅ You're already on the waitlist! Check your email for updates.`,
-                        'success'
-                    );
-                } else {
-                    showMessage(`Error: ${data.message}`, 'error');
-                }
-            } else {
-                showMessage('Unable to subscribe. Please try again.', 'error');
-            }
+            // Handle errors
+            showMessage(`Error: ${data.error || 'Unable to subscribe. Please try again.'}`, 'error');
         }
 
     } catch (error) {
-        console.error('Brevo API error:', error);
+        console.error('Subscription error:', error);
         showMessage('Network error. Please check your connection and try again.', 'error');
     }
 }
@@ -243,6 +220,8 @@ function showMessage(message, type) {
     const formMessage = document.getElementById('formMessage');
     formMessage.textContent = message;
     formMessage.className = `form-message ${type}`;
+    formMessage.style.display = 'block'; // Make the message visible
+    formMessage.style.marginTop = '16px'; // Add spacing
 
     // Auto-hide success messages after 10 seconds
     if (type === 'success') {
