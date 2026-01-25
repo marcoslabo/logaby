@@ -59,12 +59,15 @@ export default async function handler(req, res) {
             });
         } else {
             console.error('Brevo API error:', data);
+            console.error('Response status:', response.status);
             return res.status(400).json({
-                error: data.message || 'Failed to subscribe'
+                error: data.message || 'Failed to subscribe',
+                code: data.code,
+                status: response.status
             });
         }
     } catch (error) {
         console.error('Server error:', error);
-        return res.status(500).json({ error: 'Internal server error' });
+        return res.status(500).json({ error: 'Internal server error', details: error.message });
     }
 }
