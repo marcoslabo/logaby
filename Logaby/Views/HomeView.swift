@@ -8,7 +8,9 @@ struct HomeView: View {
     @State private var recentActivities: [Activity] = []
     @State private var showVoiceInput = false
     @State private var showTutorial = false
+    @State private var showWalkthrough = false
     @AppStorage("hasSeenTutorial") private var hasSeenTutorial = false
+    @AppStorage("hasSeenWalkthrough") private var hasSeenWalkthrough = false
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -46,6 +48,17 @@ struct HomeView: View {
                 print("Synced \(synced) activities from Siri")
             }
             loadData()
+            
+            // Show tutorial on first launch
+            if !hasSeenTutorial {
+                showTutorial = true
+            }
+        }
+        .onReceive(repository.objectWillChange) { _ in
+            // Refresh data when repository changes (e.g., from family sync)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                loadData()
+            }
         }
         .sheet(isPresented: $showVoiceInput) {
             VoiceInputSheet(repository: repository) {
@@ -55,7 +68,20 @@ struct HomeView: View {
             .presentationDragIndicator(.hidden)
         }
         .fullScreenCover(isPresented: $showTutorial) {
-            TutorialView(hasSeenTutorial: $hasSeenTutorial)
+            TutorialView(hasSeenTutorial: $hasSeenTutorial) {
+                // After tutorial, show walkthrough
+                if !hasSeenWalkthrough {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        showWalkthrough = true
+                        hasSeenWalkthrough = true
+                    }
+                }
+            }
+        }
+        .overlay {
+            if showWalkthrough {
+                WalkthroughOverlay(isShowing: $showWalkthrough)
+            }
         }
     }
     
@@ -75,9 +101,9 @@ struct HomeView: View {
             
             Spacer()
             
-            // Help button - minimal and unobtrusive
+            // Help button - shows walkthrough
             Button {
-                showTutorial = true
+                showWalkthrough = true
             } label: {
                 Image(systemName: "questionmark.circle")
                     .font(.system(size: 20))
@@ -108,19 +134,22 @@ struct HomeView: View {
         VStack(spacing: Spacing.md) {
             // First row - Feeding and Pumping (mother's activities)
             HStack(spacing: Spacing.md) {
+                let feedingMl = Int(summary.totalOz * 30)
+                let nursingText = summary.totalNursingMinutes > 0 ? " + \(summary.totalNursingMinutes)min" : ""
                 StatCard(
                     title: "Feedings",
                     value: String(format: "%.0f", summary.totalOz),
-                    subtitle: "oz",
+                    subtitle: "oz (\(feedingMl)ml)\(nursingText)",
                     accentColor: AppColors.feedingAccent,
                     icon: "drop.fill"
                 )
                 .frame(height: 100)
                 
+                let pumpedMl = Int(summary.totalPumpedOz * 30)
                 StatCard(
                     title: "Pumped",
                     value: String(format: "%.0f", summary.totalPumpedOz),
-                    subtitle: "oz",
+                    subtitle: "oz (\(pumpedMl)ml)",
                     accentColor: AppColors.pumpingAccent,
                     icon: "heart.fill"
                 )
@@ -132,7 +161,7 @@ struct HomeView: View {
                 StatCard(
                     title: "Sleep",
                     value: String(format: "%.1f", summary.totalSleepHours),
-                    subtitle: "hrs",
+                    subtitle: "☀️\(String(format: "%.1f", summary.daySleepHours))h 🌙\(String(format: "%.1f", summary.nightSleepHours))h",
                     accentColor: AppColors.sleepAccent,
                     icon: "moon.fill"
                 )
@@ -141,24 +170,51 @@ struct HomeView: View {
                 StatCard(
                     title: "Diapers",
                     value: "\(summary.diaperCount)",
-                    subtitle: "changes",
+                    subtitle: summary.diaperBreakdown,
                     accentColor: AppColors.diaperAccent,
                     icon: "sparkles"
                 )
                 .frame(height: 100)
             }
             
-            // Third row - Weight only (full width optional)
-            if summary.latestWeight != nil {
-                StatCard(
-                    title: "Weight",
-                    value: summary.latestWeight.map { String(format: "%.1f", $0) } ?? "--",
-                    subtitle: "lbs",
-                    accentColor: AppColors.weightAccent,
-                    icon: "scalemass.fill"
-                )
-                .frame(height: 80)
+            // Third row - Weight with prompt if stale
+            weightCard
+        }
+    }
+    
+    @ViewBuilder
+    private var weightCard: some View {
+        let daysSinceWeight = summary.lastWeightDate.map { 
+            Calendar.current.dateComponents([.day], from: $0, to: Date()).day ?? 0 
+        } ?? 999
+        
+        if let weightLbs = summary.latestWeight {
+            // Convert decimal lbs to lb + oz format (always show oz)
+            let wholeLbs = Int(weightLbs)
+            let ozPart = Int((weightLbs - Double(wholeLbs)) * 16)
+            let weightDisplay = "\(wholeLbs)lb \(ozPart)oz"
+            
+            StatCard(
+                title: daysSinceWeight > 7 ? "Weight (update soon!)" : "Weight",
+                value: weightDisplay,
+                subtitle: "",
+                accentColor: daysSinceWeight > 7 ? .orange : AppColors.weightAccent,
+                icon: "scalemass.fill"
+            )
+            .frame(height: 80)
+        } else {
+            // No weight logged yet - prompt
+            HStack {
+                Image(systemName: "scalemass.fill")
+                    .foregroundColor(.orange)
+                Text("Tap mic to log baby's weight")
+                    .font(AppFonts.bodyMedium())
+                    .foregroundColor(AppColors.textSoft)
             }
+            .frame(maxWidth: .infinity)
+            .padding(Spacing.md)
+            .background(AppColors.cardBackground)
+            .cornerRadius(12)
         }
     }
     
@@ -173,10 +229,7 @@ struct HomeView: View {
                 emptyState
             } else {
                 ForEach(recentActivities) { activity in
-                    ActivityRow(activity: activity) {
-                        repository.deleteActivity(activity)
-                        loadData()
-                    }
+                    ActivityRow(activity: activity)
                 }
             }
         }

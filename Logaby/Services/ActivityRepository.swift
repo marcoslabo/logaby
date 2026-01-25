@@ -6,6 +6,9 @@ import SwiftData
 final class ActivityRepository: ObservableObject {
     private let modelContext: ModelContext
     
+    /// Track deleted activity IDs to prevent re-import from sync
+    private var deletedActivityIds: Set<UUID> = []
+    
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
     }
@@ -23,9 +26,76 @@ final class ActivityRepository: ObservableObject {
             
             if session != nil {
                 await FamilyService.shared.fetchCurrentFamily()
-                await syncDown()
+                
+                // Bi-directional sync: upload first, then download
+                if FamilyService.shared.currentFamily != nil {
+                    await syncUp()   // Upload local activities
+                    await syncDown() // Download remote activities
+                }
+                
+                // Set up realtime subscription if we have a family
+                if let family = FamilyService.shared.currentFamily {
+                    await setupRealtimeSync(familyId: family.id)
+                }
             }
         }
+    }
+    
+    /// Upload all local activities to cloud (ensures nothing is lost)
+    func syncUp() async {
+        guard let family = FamilyService.shared.currentFamily,
+              let userId = SupabaseService.shared.currentUserId else { return }
+        
+        // Get all local activities and upload them
+        let feedings = getFeedings()
+        let diapers = getDiapers()
+        let sleeps = getSleeps()
+        let weights = getWeights()
+        let pumpings = getPumpings()
+        
+        for feeding in feedings {
+            let syncItem = feeding.toSyncActivity(familyId: family.id, userId: userId)
+            try? await SyncService.shared.uploadActivity(syncItem)
+        }
+        
+        for diaper in diapers {
+            let syncItem = diaper.toSyncActivity(familyId: family.id, userId: userId)
+            try? await SyncService.shared.uploadActivity(syncItem)
+        }
+        
+        for sleep in sleeps {
+            let syncItem = sleep.toSyncActivity(familyId: family.id, userId: userId)
+            try? await SyncService.shared.uploadActivity(syncItem)
+        }
+        
+        for weight in weights {
+            let syncItem = weight.toSyncActivity(familyId: family.id, userId: userId)
+            try? await SyncService.shared.uploadActivity(syncItem)
+        }
+        
+        for pumping in pumpings {
+            let syncItem = pumping.toSyncActivity(familyId: family.id, userId: userId)
+            try? await SyncService.shared.uploadActivity(syncItem)
+        }
+        
+        print("📤 Uploaded all local activities to cloud")
+    }
+    
+    /// Set up realtime sync for a family
+    func setupRealtimeSync(familyId: UUID) async {
+        // Set up callback to import activities received in realtime
+        SyncService.shared.onActivityReceived = { [weak self] activity in
+            Task { @MainActor in
+                self?.importActivity(activity)
+                try? self?.modelContext.save()
+                
+                // Notify observers that data changed
+                self?.objectWillChange.send()
+            }
+        }
+        
+        // Subscribe to realtime updates
+        await SyncService.shared.subscribeToFamily(familyId)
     }
     
     // MARK: - Sync Helpers
@@ -76,31 +146,69 @@ final class ActivityRepository: ObservableObject {
     }
     
     private func importActivity(_ activity: SyncActivity) {
-        // Check if exists
-        // This is simplified: assuming separate tables for local models
-        // Ideally we check by ID. ActivityRepository manage models separately so we'd need to check each.
-        // For beta: just try to fetch by ID across models? No, ID is UUID.
-        // We can just try to fetch existing item by ID.
-        // But SwiftData query by ID requires Type.
+        // Skip if this activity was deleted locally
+        if deletedActivityIds.contains(activity.id) {
+            return
+        }
+        
+        // Import or update activity from sync data
         
         if activity.type == "feeding" {
             if let existing = try? modelContext.fetch(FetchDescriptor<Feeding>(predicate: #Predicate { $0.id == activity.id })).first {
-                // Update?
-                return 
+                // UPDATE existing feeding with new values from sync
+                if let updated = Feeding.fromSyncActivity(activity) {
+                    existing.timestamp = updated.timestamp
+                    existing.type = updated.type
+                    existing.amountOz = updated.amountOz
+                    existing.durationMinutes = updated.durationMinutes
+                    existing.side = updated.side
+                    existing.bottleContent = updated.bottleContent
+                }
+            } else if let new = Feeding.fromSyncActivity(activity) {
+                modelContext.insert(new)
             }
-            if let new = Feeding.fromSyncActivity(activity) { modelContext.insert(new) }
         } else if activity.type == "diaper" {
-            if let existing = try? modelContext.fetch(FetchDescriptor<Diaper>(predicate: #Predicate { $0.id == activity.id })).first { return }
-            if let new = Diaper.fromSyncActivity(activity) { modelContext.insert(new) }
+            if let existing = try? modelContext.fetch(FetchDescriptor<Diaper>(predicate: #Predicate { $0.id == activity.id })).first {
+                // UPDATE existing diaper
+                if let updated = Diaper.fromSyncActivity(activity) {
+                    existing.timestamp = updated.timestamp
+                    existing.type = updated.type
+                }
+            } else if let new = Diaper.fromSyncActivity(activity) {
+                modelContext.insert(new)
+            }
         } else if activity.type == "sleep" {
-            if let existing = try? modelContext.fetch(FetchDescriptor<Sleep>(predicate: #Predicate { $0.id == activity.id })).first { return }
-            if let new = Sleep.fromSyncActivity(activity) { modelContext.insert(new) }
+            if let existing = try? modelContext.fetch(FetchDescriptor<Sleep>(predicate: #Predicate { $0.id == activity.id })).first {
+                // UPDATE existing sleep with new start/end times
+                if let updated = Sleep.fromSyncActivity(activity) {
+                    existing.startTime = updated.startTime
+                    existing.endTime = updated.endTime
+                }
+            } else if let new = Sleep.fromSyncActivity(activity) {
+                modelContext.insert(new)
+            }
         } else if activity.type == "weight" {
-             if let existing = try? modelContext.fetch(FetchDescriptor<Weight>(predicate: #Predicate { $0.id == activity.id })).first { return }
-            if let new = Weight.fromSyncActivity(activity) { modelContext.insert(new) }
+            if let existing = try? modelContext.fetch(FetchDescriptor<Weight>(predicate: #Predicate { $0.id == activity.id })).first {
+                // UPDATE existing weight
+                if let updated = Weight.fromSyncActivity(activity) {
+                    existing.timestamp = updated.timestamp
+                    existing.weightLbs = updated.weightLbs
+                }
+            } else if let new = Weight.fromSyncActivity(activity) {
+                modelContext.insert(new)
+            }
         } else if activity.type == "pumping" {
-             if let existing = try? modelContext.fetch(FetchDescriptor<Pumping>(predicate: #Predicate { $0.id == activity.id })).first { return }
-             if let new = Pumping.fromSyncActivity(activity) { modelContext.insert(new) }
+            if let existing = try? modelContext.fetch(FetchDescriptor<Pumping>(predicate: #Predicate { $0.id == activity.id })).first {
+                // UPDATE existing pumping
+                if let updated = Pumping.fromSyncActivity(activity) {
+                    existing.timestamp = updated.timestamp
+                    existing.amountOz = updated.amountOz
+                    existing.durationMinutes = updated.durationMinutes
+                    existing.side = updated.side
+                }
+            } else if let new = Pumping.fromSyncActivity(activity) {
+                modelContext.insert(new)
+            }
         }
     }
     
@@ -132,6 +240,11 @@ final class ActivityRepository: ObservableObject {
         }
     }
     
+    func updateFeeding(_ feeding: Feeding) {
+        try? modelContext.save()
+        upload(feeding)
+    }
+    
     // MARK: - Diaper
     
     func addDiaper(_ diaper: Diaper) {
@@ -158,6 +271,11 @@ final class ActivityRepository: ObservableObject {
             modelContext.delete(diaper)
             try? modelContext.save()
         }
+    }
+    
+    func updateDiaper(_ diaper: Diaper) {
+        try? modelContext.save()
+        upload(diaper)
     }
     
     // MARK: - Sleep
@@ -201,6 +319,11 @@ final class ActivityRepository: ObservableObject {
         }
     }
     
+    func updateSleep(_ sleep: Sleep) {
+        try? modelContext.save()
+        upload(sleep)
+    }
+    
     // MARK: - Weight
     
     func addWeight(_ weight: Weight) {
@@ -226,6 +349,11 @@ final class ActivityRepository: ObservableObject {
             modelContext.delete(weight)
             try? modelContext.save()
         }
+    }
+    
+    func updateWeight(_ weight: Weight) {
+        try? modelContext.save()
+        upload(weight)
     }
     
     // MARK: - Pumping
@@ -256,6 +384,11 @@ final class ActivityRepository: ObservableObject {
         }
     }
     
+    func updatePumping(_ pumping: Pumping) {
+        try? modelContext.save()
+        upload(pumping)
+    }
+    
     // MARK: - Summary
     
     func getTodaySummary() -> DailySummary {
@@ -263,25 +396,41 @@ final class ActivityRepository: ObservableObject {
         
         let feedings = getFeedings(for: today)
         let totalOz = feedings.reduce(0.0) { $0 + $1.summaryValue }
+        let totalNursingMinutes = feedings.reduce(0) { $0 + $1.nursingMinutes }
         
         let pumpings = getPumpings(for: today)
         let totalPumpedOz = pumpings.reduce(0.0) { $0 + $1.amountOz }
         
         let sleeps = getSleeps(for: today)
-        let totalSleepHours = sleeps.filter { !$0.isActive }.reduce(0.0) { $0 + $1.durationHours }
+        let completedSleeps = sleeps.filter { !$0.isActive }
+        let totalSleepHours = completedSleeps.reduce(0.0) { $0 + $1.durationHours }
+        let daySleepHours = completedSleeps.filter { !$0.isNightSleep }.reduce(0.0) { $0 + $1.durationHours }
+        let nightSleepHours = completedSleeps.filter { $0.isNightSleep }.reduce(0.0) { $0 + $1.durationHours }
         
         let diapers = getDiapers(for: today)
+        let wetCount = diapers.filter { $0.type == .wet }.count
+        let dirtyCount = diapers.filter { $0.type == .dirty }.count
+        let mixedCount = diapers.filter { $0.type == .mixed }.count
         
-        let latestWeight = getLatestWeight()?.weightLbs
+        let latestWeightRecord = getLatestWeight()
+        let latestWeight = latestWeightRecord?.weightLbs
+        let lastWeightDate = latestWeightRecord?.timestamp
         
         let activeSleep = getActiveSleep()
         
         return DailySummary(
             totalOz: totalOz,
             totalPumpedOz: totalPumpedOz,
+            totalNursingMinutes: totalNursingMinutes,
             totalSleepHours: totalSleepHours,
+            daySleepHours: daySleepHours,
+            nightSleepHours: nightSleepHours,
             diaperCount: diapers.count,
+            wetDiaperCount: wetCount,
+            dirtyDiaperCount: dirtyCount,
+            mixedDiaperCount: mixedCount,
             latestWeight: latestWeight,
+            lastWeightDate: lastWeightDate,
             activeSleep: activeSleep
         )
     }
@@ -338,6 +487,9 @@ final class ActivityRepository: ObservableObject {
     // MARK: - Delete Activity
     
     func deleteActivity(_ activity: Activity) {
+        // Track as deleted to prevent re-import from sync
+        deletedActivityIds.insert(activity.id)
+        
         switch activity.type {
         case .feeding:
             deleteFeeding(id: activity.id)
@@ -350,6 +502,9 @@ final class ActivityRepository: ObservableObject {
         case .pumping:
             deletePumping(id: activity.id)
         }
+        
+        // Notify views that data changed
+        objectWillChange.send()
     }
     
     // MARK: - Clear All

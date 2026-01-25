@@ -79,10 +79,24 @@ enum AnyJSON: Codable {
     var intValue: Int? { if case .number(let n) = self { return Int(n) } else { return nil } }
 }
 
-/// Service for syncing activities
-class SyncService {
+/// Service for syncing activities with real-time support
+class SyncService: ObservableObject {
     static let shared = SyncService()
     private let client = SupabaseService.shared.client
+    
+    /// Callback for when new activities arrive via realtime or polling
+    var onActivityReceived: ((SyncActivity) -> Void)?
+    
+    /// Current realtime channel subscription
+    private var realtimeChannel: RealtimeChannelV2?
+    private var subscribedFamilyId: UUID?
+    
+    /// Polling timer for fallback sync
+    private var pollingTimer: Timer?
+    private var lastSyncTime: Date = Date()
+    
+    /// Track known activity IDs to avoid duplicates
+    private var knownActivityIds: Set<UUID> = []
     
     private init() {}
     
@@ -92,20 +106,159 @@ class SyncService {
             .from("activities")
             .upsert(activity) // Use upsert to handle updates
             .execute()
+        
+        // Track this as known to avoid re-importing via polling
+        knownActivityIds.insert(activity.id)
     }
     
     /// Fetch recent activities for family
     func fetchActivities(familyId: UUID, since: Date? = nil) async throws -> [SyncActivity] {
-        // Simplified query: fetch recent 100
-        let activities: [SyncActivity] = try await client.database
+        var query = client.database
             .from("activities")
             .select()
             .eq("family_id", value: familyId)
+        
+        if let since = since {
+            // Fetch only newer activities
+            let formatter = ISO8601DateFormatter()
+            formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+            query = query.gt("timestamp", value: formatter.string(from: since))
+        }
+        
+        let activities: [SyncActivity] = try await query
             .order("timestamp", ascending: false)
             .limit(100)
             .execute()
             .value
         
         return activities
+    }
+    
+    // MARK: - Realtime Subscription
+    
+    /// Subscribe to realtime updates for a family
+    func subscribeToFamily(_ familyId: UUID) async {
+        // Don't resubscribe to same family
+        if subscribedFamilyId == familyId { return }
+        
+        // Unsubscribe from previous if any
+        await unsubscribe()
+        
+        subscribedFamilyId = familyId
+        
+        print("📡 Subscribing to realtime for family: \(familyId)")
+        
+        // Create channel for this family's activities
+        let channel = client.realtimeV2.channel("family-\(familyId.uuidString)")
+        
+        // Listen for new inserts on activities table for this family
+        let changes = channel.postgresChange(
+            InsertAction.self,
+            schema: "public",
+            table: "activities",
+            filter: "family_id=eq.\(familyId.uuidString)"
+        )
+        
+        // Store channel reference
+        realtimeChannel = channel
+        
+        // Subscribe to the channel
+        await channel.subscribe()
+        
+        // Listen for inserts
+        Task {
+            for await insert in changes {
+                do {
+                    // Configure decoder for ISO8601 dates
+                    let decoder = JSONDecoder()
+                    decoder.dateDecodingStrategy = .iso8601
+                    
+                    // Decode the new activity
+                    let activity = try insert.decodeRecord(as: SyncActivity.self, decoder: decoder)
+                    
+                    // Skip if already known
+                    if knownActivityIds.contains(activity.id) {
+                        continue
+                    }
+                    knownActivityIds.insert(activity.id)
+                    
+                    // Skip if this was created by current user (we already have it locally)
+                    if activity.created_by == SupabaseService.shared.currentUserId {
+                        print("📡 Skipping own activity")
+                        continue
+                    }
+                    
+                    print("📡 Received new activity from family member: \(activity.type)")
+                    
+                    // Notify listener (ActivityRepository)
+                    await MainActor.run {
+                        self.onActivityReceived?(activity)
+                    }
+                } catch {
+                    print("📡 Error decoding realtime activity: \(error)")
+                }
+            }
+        }
+        
+        print("📡 Realtime subscription active")
+        
+        // Start polling as fallback (every 15 seconds)
+        await MainActor.run {
+            startPolling(familyId: familyId)
+        }
+    }
+    
+    /// Unsubscribe from realtime updates
+    func unsubscribe() async {
+        await MainActor.run {
+            pollingTimer?.invalidate()
+            pollingTimer = nil
+        }
+        
+        if let channel = realtimeChannel {
+            await channel.unsubscribe()
+            realtimeChannel = nil
+            subscribedFamilyId = nil
+            print("📡 Unsubscribed from realtime")
+        }
+    }
+    
+    // MARK: - Polling Fallback
+    
+    /// Start polling for new activities (fallback if realtime doesn't work)
+    @MainActor
+    private func startPolling(familyId: UUID) {
+        pollingTimer?.invalidate()
+        lastSyncTime = Date()
+        
+        pollingTimer = Timer.scheduledTimer(withTimeInterval: 15.0, repeats: true) { [weak self] _ in
+            Task {
+                await self?.pollForNewActivities(familyId: familyId)
+            }
+        }
+        
+        print("📡 Polling fallback started (every 15s)")
+    }
+    
+    /// Poll for new activities since last sync
+    private func pollForNewActivities(familyId: UUID) async {
+        do {
+            // Fetch recent activities (last 24 hours worth) to catch any updates
+            let activities = try await fetchActivities(familyId: familyId)
+            
+            for activity in activities {
+                // Track as known (but don't skip - let importActivity handle update logic)
+                knownActivityIds.insert(activity.id)
+                
+                // Pass to import handler - it will insert OR update as needed
+                await MainActor.run {
+                    self.onActivityReceived?(activity)
+                }
+            }
+            
+            print("📡 [Polling] Processed \(activities.count) activities")
+        } catch {
+            print("📡 Polling error: \(error)")
+        }
     }
 }

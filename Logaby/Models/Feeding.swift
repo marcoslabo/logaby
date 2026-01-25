@@ -14,6 +14,12 @@ enum NursingSide: String, Codable, CaseIterable {
     case both
 }
 
+/// Content type for bottle feedings
+enum BottleContent: String, Codable, CaseIterable {
+    case formula
+    case breastmilk
+}
+
 /// Feeding activity model
 @Model
 final class Feeding {
@@ -23,6 +29,7 @@ final class Feeding {
     var amountOz: Double?
     var durationMinutes: Int?
     var side: NursingSide?
+    var bottleContent: BottleContent?  // Only for bottle feedings
     
     init(
         id: UUID = UUID(),
@@ -30,7 +37,8 @@ final class Feeding {
         type: FeedingType,
         amountOz: Double? = nil,
         durationMinutes: Int? = nil,
-        side: NursingSide? = nil
+        side: NursingSide? = nil,
+        bottleContent: BottleContent? = nil
     ) {
         self.id = id
         self.timestamp = timestamp
@@ -38,11 +46,12 @@ final class Feeding {
         self.amountOz = amountOz
         self.durationMinutes = durationMinutes
         self.side = side
+        self.bottleContent = bottleContent
     }
     
     /// Create a bottle feeding
-    static func bottle(amountOz: Double, timestamp: Date = Date()) -> Feeding {
-        Feeding(timestamp: timestamp, type: .bottle, amountOz: amountOz)
+    static func bottle(amountOz: Double, content: BottleContent? = nil, timestamp: Date = Date()) -> Feeding {
+        Feeding(timestamp: timestamp, type: .bottle, amountOz: amountOz, bottleContent: content)
     }
     
     /// Create a nursing feeding
@@ -53,9 +62,12 @@ final class Feeding {
     /// Get a display string for the feeding
     var displayText: String {
         if type == .bottle {
-            return "\(Int(amountOz ?? 0))oz bottle"
+            let oz = amountOz ?? 0
+            let ml = Int(oz * 30)
+            let contentText = bottleContent?.rawValue ?? "bottle"
+            return "\(Int(oz))oz (\(ml)ml) \(contentText)"
         } else {
-            let sideText = side == .both ? "" : " \(side?.rawValue ?? "")"
+            let sideText = side == .both ? "" : " (\(side?.rawValue ?? ""))"
             return "\(durationMinutes ?? 0)min nursing\(sideText)"
         }
     }
@@ -63,5 +75,10 @@ final class Feeding {
     /// Get amount for summary (oz for bottle only)
     var summaryValue: Double {
         type == .bottle ? (amountOz ?? 0) : 0
+    }
+    
+    /// Get duration for summary (minutes for nursing only)
+    var nursingMinutes: Int {
+        type == .nursing ? (durationMinutes ?? 0) : 0
     }
 }

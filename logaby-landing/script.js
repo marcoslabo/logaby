@@ -55,8 +55,8 @@ function updateScarcityUI() {
     const scarcityText = document.getElementById('scarcityText');
     const scarcityBadge = document.getElementById('scarcityBadge');
 
-    // Launch message - AI powered
-    scarcityText.innerHTML = `🤖 Powered by AI • Free to download!`;
+    // Waitlist message
+    scarcityText.innerHTML = `🔥 Join the waitlist for early access!`;
     scarcityBadge.style.display = 'inline-flex';
 }
 

@@ -29,6 +29,7 @@ struct Activity: Identifiable {
     let displayText: String
     let detailText: String  // New: shows time/duration details
     let endTime: Date?      // New: for sleep time ranges
+    let source: AnyObject   // Reference to original model for editing
     
     /// Format time as "8:30 PM"
     static func formatTime(_ date: Date) -> String {
@@ -49,7 +50,8 @@ struct Activity: Identifiable {
             timestamp: feeding.timestamp,
             displayText: feeding.displayText,
             detailText: detail,
-            endTime: nil
+            endTime: nil,
+            source: feeding
         )
     }
     
@@ -60,7 +62,8 @@ struct Activity: Identifiable {
             timestamp: diaper.timestamp,
             displayText: diaper.displayText,
             detailText: "at \(formatTime(diaper.timestamp))",
-            endTime: nil
+            endTime: nil,
+            source: diaper
         )
     }
     
@@ -78,7 +81,8 @@ struct Activity: Identifiable {
             timestamp: sleep.startTime,
             displayText: sleep.displayText,
             detailText: detail,
-            endTime: sleep.endTime
+            endTime: sleep.endTime,
+            source: sleep
         )
     }
     
@@ -89,7 +93,8 @@ struct Activity: Identifiable {
             timestamp: weight.timestamp,
             displayText: weight.displayText,
             detailText: "at \(formatTime(weight.timestamp))",
-            endTime: nil
+            endTime: nil,
+            source: weight
         )
     }
     
@@ -100,7 +105,8 @@ struct Activity: Identifiable {
             timestamp: pumping.timestamp,
             displayText: pumping.displayText,
             detailText: "at \(formatTime(pumping.timestamp))",
-            endTime: nil
+            endTime: nil,
+            source: pumping
         )
     }
 }
@@ -109,18 +115,42 @@ struct Activity: Identifiable {
 struct DailySummary {
     let totalOz: Double
     let totalPumpedOz: Double
+    let totalNursingMinutes: Int  // NEW: total nursing time
     let totalSleepHours: Double
+    let daySleepHours: Double
+    let nightSleepHours: Double
     let diaperCount: Int
+    let wetDiaperCount: Int
+    let dirtyDiaperCount: Int
+    let mixedDiaperCount: Int
     let latestWeight: Double?
+    let lastWeightDate: Date?
     let activeSleep: Sleep?
+    
+    /// Formatted diaper breakdown string (e.g., "3💧 2💩")
+    var diaperBreakdown: String {
+        var parts: [String] = []
+        let wetTotal = wetDiaperCount + mixedDiaperCount
+        let dirtyTotal = dirtyDiaperCount + mixedDiaperCount
+        if wetTotal > 0 { parts.append("\(wetTotal)💧") }
+        if dirtyTotal > 0 { parts.append("\(dirtyTotal)💩") }
+        return parts.isEmpty ? "0" : parts.joined(separator: " ")
+    }
     
     static var empty: DailySummary {
         DailySummary(
             totalOz: 0,
             totalPumpedOz: 0,
+            totalNursingMinutes: 0,
             totalSleepHours: 0,
+            daySleepHours: 0,
+            nightSleepHours: 0,
             diaperCount: 0,
+            wetDiaperCount: 0,
+            dirtyDiaperCount: 0,
+            mixedDiaperCount: 0,
             latestWeight: nil,
+            lastWeightDate: nil,
             activeSleep: nil
         )
     }

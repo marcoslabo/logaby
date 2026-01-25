@@ -8,7 +8,7 @@ options:
   
 settings:
   base:
-    DEVELOPMENT_TEAM: 9Y9VC5568Q
+    DEVELOPMENT_TEAM: 8782KMKS2Z
     SWIFT_VERSION: "5.0"
     
 targets:
@@ -24,7 +24,7 @@ targets:
           - group.com.logaby.shared
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.marcoslacayo.logaby
+        PRODUCT_BUNDLE_IDENTIFIER: com.logaby.app
         INFOPLIST_FILE: Logaby/Info.plist
         CODE_SIGN_STYLE: Automatic
         MARKETING_VERSION: "1.0"
