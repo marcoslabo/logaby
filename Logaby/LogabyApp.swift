@@ -45,9 +45,7 @@ struct ContentView: View {
     @ObservedObject var repository: ActivityRepository
     @ObservedObject var auth = SupabaseService.shared
     @Binding var hasSeenOnboarding: Bool
-    @AppStorage("hasSeenTutorial") private var hasSeenTutorial = false
     @State private var selectedTab = 0
-    @State private var showTutorial = false
     
     var body: some View {
         if !hasSeenOnboarding {
@@ -88,12 +86,6 @@ struct ContentView: View {
             .tint(AppColors.primary)
             .onAppear {
                 repository.startSync() // Start sync now that we have a user
-                if !hasSeenTutorial {
-                    showTutorial = true
-                }
-            }
-            .fullScreenCover(isPresented: $showTutorial) {
-                TutorialView(hasSeenTutorial: $hasSeenTutorial)
             }
         }
     }

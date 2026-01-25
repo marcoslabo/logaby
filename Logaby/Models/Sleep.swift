@@ -51,4 +51,10 @@ final class Sleep {
     func wake() {
         endTime = Date()
     }
+    
+    /// Check if this is night sleep (8pm-6am) vs day nap
+    var isNightSleep: Bool {
+        let hour = Calendar.current.component(.hour, from: startTime)
+        return hour < 6 || hour >= 20
+    }
 }

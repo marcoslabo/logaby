@@ -6,6 +6,7 @@ struct HistoryView: View {
     @ObservedObject var repository: ActivityRepository
     @State private var selectedFilter: ActivityType?
     @State private var groupedActivities: [(String, [Activity])] = []
+    @State private var activityToEdit: Activity?  // For edit sheet
     
     var body: some View {
         NavigationStack {
@@ -25,6 +26,11 @@ struct HistoryView: View {
         }
         .onAppear {
             loadData()
+        }
+        .sheet(item: $activityToEdit) { activity in
+            EditActivitySheet(activity: activity, repository: repository) {
+                loadData()
+            }
         }
     }
     
@@ -65,13 +71,22 @@ struct HistoryView: View {
             ForEach(groupedActivities, id: \.0) { date, activities in
                 Section {
                     ForEach(activities) { activity in
-                        ActivityRow(activity: activity) {
-                            repository.deleteActivity(activity)
-                            loadData()
-                        }
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(Color.clear)
-                        .listRowInsets(EdgeInsets(top: 4, leading: 0, bottom: 4, trailing: 0))
+                        ActivityRow(activity: activity)
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                activityToEdit = activity
+                            }
+                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                Button(role: .destructive) {
+                                    repository.deleteActivity(activity)
+                                    loadData()
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                            }
+                            .listRowSeparator(.hidden)
+                            .listRowBackground(Color.clear)
+                            .listRowInsets(EdgeInsets(top: 4, leading: 0, bottom: 4, trailing: 0))
                     }
                 } header: {
                     Text(date)

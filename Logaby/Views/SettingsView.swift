@@ -200,8 +200,9 @@ struct SettingsView: View {
             Button("Create") {
                 Task {
                     do {
-                        _ = try await familyService.createFamily(name: familyName)
+                        let family = try await familyService.createFamily(name: familyName)
                         await repository.syncDown()
+                        await repository.setupRealtimeSync(familyId: family.id)
                     } catch {
                         errorMessage = error.localizedDescription
                     }
@@ -214,8 +215,9 @@ struct SettingsView: View {
             Button("Join") {
                 Task {
                     do {
-                        _ = try await familyService.joinByCode(inviteCode)
+                        let family = try await familyService.joinByCode(inviteCode)
                         await repository.syncDown()
+                        await repository.setupRealtimeSync(familyId: family.id)
                     } catch {
                         errorMessage = error.localizedDescription
                     }

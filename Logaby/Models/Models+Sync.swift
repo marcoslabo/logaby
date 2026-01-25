@@ -11,6 +11,7 @@ extension Feeding {
         case .bottle:
             data["subtype"] = .string("bottle")
             if let amount = amountOz { data["amount"] = .number(amount) }
+            if let content = bottleContent { data["content"] = .string(content.rawValue) }
         case .nursing:
             data["subtype"] = .string("nursing")
             if let dur = durationMinutes { data["duration"] = .number(Double(dur)) }
@@ -102,7 +103,9 @@ extension Feeding {
         let subtype = activity.data["subtype"]?.stringValue
         
         if subtype == "bottle", let amt = activity.data["amount"]?.doubleValue {
-            return Feeding.bottle(amountOz: amt, timestamp: activity.timestamp).applyId(activity.id)
+            let contentRaw = activity.data["content"]?.stringValue
+            let content = contentRaw.flatMap { BottleContent(rawValue: $0) }
+            return Feeding.bottle(amountOz: amt, content: content, timestamp: activity.timestamp).applyId(activity.id)
         } else if subtype == "nursing", let dur = activity.data["duration"]?.intValue {
             let sideRaw = activity.data["side"]?.stringValue ?? "both"
             let side = NursingSide(rawValue: sideRaw) ?? .both

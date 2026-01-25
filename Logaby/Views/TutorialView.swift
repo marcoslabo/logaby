@@ -4,6 +4,7 @@ import SwiftUI
 struct TutorialView: View {
     @Environment(\.dismiss) private var dismiss
     @Binding var hasSeenTutorial: Bool
+    var onComplete: () -> Void = {}
     @State private var currentStep = 0
     
     private let steps: [TutorialStep] = [
@@ -11,28 +12,35 @@ struct TutorialView: View {
             icon: "mic.fill",
             iconColor: AppColors.primary,
             title: "Voice First",
-            description: "Tap the mic button and speak naturally. Just say what happened!",
-            examples: ["\"Fed 4oz bottle\"", "\"Wet diaper\"", "\"Baby fell asleep\""]
+            description: "Just tap the mic and speak naturally. Log anything with your voice!",
+            examples: ["\"Fed 4oz formula bottle\"", "\"Breastfed 15 min left side\"", "\"Slept from 2pm to 4pm\"", "\"Wet diaper\""]
         ),
         TutorialStep(
-            icon: "text.bubble.fill",
+            icon: "heart.text.square.fill",
             iconColor: AppColors.feedingAccent,
-            title: "Natural Language",
-            description: "Talk like you normally would. We understand many phrases:",
-            examples: ["\"Nursed 15 minutes left side\"", "\"Changed a poopy diaper\"", "\"Pumped 3oz\""]
+            title: "Track What Matters",
+            description: "Monitor the key health indicators:",
+            examples: ["Bottle: oz + ml (formula/breastmilk)", "Nursing: duration + side", "Diapers: 💧 wet / 💩 poop", "Sleep: day ☀️ / night 🌙", "Weight: lb + oz"]
         ),
         TutorialStep(
-            icon: "list.bullet.clipboard.fill",
+            icon: "pencil.and.outline",
+            iconColor: AppColors.weightAccent,
+            title: "Edit & Delete",
+            description: "Made a mistake? Easy to fix!",
+            examples: ["Tap any entry to edit", "Swipe left to delete"]
+        ),
+        TutorialStep(
+            icon: "doc.text.fill",
             iconColor: AppColors.sleepAccent,
-            title: "Multiple Activities",
-            description: "Log several things at once by saying \"and\" or \"also\":",
-            examples: ["\"Fed 4oz and changed diaper\"", "\"Pumped 3oz, also baby napped 2 hours\""]
+            title: "Reports for Doctors",
+            description: "Generate detailed summaries for pediatrician visits. Everything in one place!",
+            examples: nil
         ),
         TutorialStep(
-            icon: "chart.bar.fill",
+            icon: "person.2.fill",
             iconColor: AppColors.diaperAccent,
-            title: "Track Everything",
-            description: "View your history, see daily summaries, and generate reports for doctor visits.",
+            title: "Share with Family",
+            description: "Create or join a family to sync with your partner. Everyone stays updated!",
             examples: nil
         )
     ]
@@ -144,6 +152,7 @@ struct TutorialView: View {
     
     private func completeTutorial() {
         hasSeenTutorial = true
+        onComplete()
         dismiss()
     }
 }

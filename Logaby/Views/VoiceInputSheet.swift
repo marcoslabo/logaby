@@ -18,8 +18,8 @@ struct VoiceInputSheet: View {
     private let examplePhrases = [
         ("🍼", "Feeding", ["4oz bottle", "fed 150ml formula", "nursed 10 mins left"]),
         ("👶", "Diaper", ["wet diaper", "poopy diaper", "changed diaper"]),
-        ("😴", "Sleep", ["baby asleep", "woke up", "napped 2 hours"]),
-        ("⚖️", "Weight", ["weighs 8 pounds 4oz"]),
+        ("😴", "Sleep", ["baby asleep", "slept from 2pm to 4pm", "napped 2 hours"]),
+        ("⚖️", "Weight", ["weighs 8 pounds", "9 lbs 4oz"]),
         ("🤱", "Pumping", ["pumped 4oz", "pumped 120ml"])
     ]
     
@@ -249,71 +249,55 @@ struct VoiceInputSheet: View {
     private func processInput(_ transcript: String) {
         guard !transcript.isEmpty else { return }
         
-        // Try to parse multiple activities (only returns results if multiple types detected)
-        let results = VoiceParser.parseMultiple(transcript)
+        // Use async Task to call AI parser
+        Task {
+            await processInputAsync(transcript)
+        }
+    }
+    
+    private func processInputAsync(_ transcript: String) async {
+        // Always use AI parser (with local fallback built-in)
+        let result = await VoiceParser.parseWithAI(transcript)
         
-        // If we got any results from multi-parse, use them (don't also call single parse)
-        if !results.isEmpty {
-            var successCount = 0
-            for result in results {
-                if saveActivity(result) {
-                    successCount += 1
-                }
-            }
-            if successCount > 0 {
-                if successCount == 1 {
-                    // Single result from multi-parse - show specific message
-                    showConfirmation("Logged activity! ✓")
+        await MainActor.run {
+            switch result {
+            case .feeding(let feeding):
+                repository.addFeeding(feeding)
+                showConfirmation("Logged \(feeding.displayText)")
+                
+            case .diaper(let diaper):
+                repository.addDiaper(diaper)
+                showConfirmation("Logged \(diaper.displayText.lowercased())")
+                
+            case .sleepStart(let sleep):
+                repository.startSleep(sleep)
+                showConfirmation("Started sleep timer 😴")
+                
+            case .sleepEnd:
+                if let activeSleep = repository.getActiveSleep() {
+                    repository.endSleep(id: activeSleep.id)
+                    showConfirmation("Baby woke up! Slept \(activeSleep.durationMinutes) min")
                 } else {
-                    showConfirmation("Logged \(successCount) activities! ✓")
+                    showError("No active sleep to end")
                 }
-            } else {
+                
+            case .sleepCompleted(let sleep):
+                repository.startSleep(sleep)
+                showConfirmation("Logged \(sleep.displayText) 😴")
+                
+            case .weight(let weight):
+                repository.addWeight(weight)
+                showConfirmation("Logged \(weight.displayText)")
+                
+            case .pumping(let pumping):
+                repository.addPumping(pumping)
+                showConfirmation("Logged \(pumping.displayText) 🤱")
+                
+            case .error(_):
+                // Show examples instead of raw error
                 showError("Try one of the examples below")
                 showExamples = true
             }
-            return
-        }
-        
-        // Single activity - parseMultiple returned empty, so only one activity type
-        let result = VoiceParser.parse(transcript)
-        
-        switch result {
-        case .feeding(let feeding):
-            repository.addFeeding(feeding)
-            showConfirmation("Logged \(feeding.displayText)")
-            
-        case .diaper(let diaper):
-            repository.addDiaper(diaper)
-            showConfirmation("Logged \(diaper.displayText.lowercased())")
-            
-        case .sleepStart(let sleep):
-            repository.startSleep(sleep)
-            showConfirmation("Started sleep timer 😴")
-            
-        case .sleepEnd:
-            if let activeSleep = repository.getActiveSleep() {
-                repository.endSleep(id: activeSleep.id)
-                showConfirmation("Baby woke up! Slept \(activeSleep.durationMinutes) min")
-            } else {
-                showError("No active sleep to end")
-            }
-            
-        case .sleepCompleted(let sleep):
-            repository.startSleep(sleep)
-            showConfirmation("Logged \(sleep.displayText) 😴")
-            
-        case .weight(let weight):
-            repository.addWeight(weight)
-            showConfirmation("Logged \(weight.displayText)")
-            
-        case .pumping(let pumping):
-            repository.addPumping(pumping)
-            showConfirmation("Logged \(pumping.displayText) 🤱")
-            
-        case .error(_):
-            // Show examples instead of raw error
-            showError("Try one of the examples below")
-            showExamples = true
         }
     }
     
