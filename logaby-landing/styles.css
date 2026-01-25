@@ -1033,11 +1033,12 @@ header {
 
 .price-card {
     background: white;
-    max-width: 480px;
-    margin: 40px auto 0;
     border-radius: 32px;
-    padding: 48px;
+    padding: 36px 28px;
     box-shadow: 0 30px 80px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    min-height: 500px;
 }
 
 .price-badge {
@@ -1048,39 +1049,42 @@ header {
     font-weight: 700;
     font-size: 0.9rem;
     display: inline-block;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
 }
 
 .price-amount {
-    font-size: 4rem;
+    font-size: 3.5rem;
     font-weight: 800;
     color: var(--coral-deep);
 }
 
 .price-amount span {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     color: var(--text-soft);
 }
 
 .price-note {
-    font-size: 1.1rem;
+    font-size: 1rem;
     color: var(--text-soft);
-    margin-bottom: 32px;
+    margin-bottom: 24px;
 }
 
 .price-features {
     text-align: left;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
+    flex: 1;
 }
 
 .price-features li {
     list-style: none;
-    padding: 12px 0;
+    padding: 10px 0;
     border-bottom: 1px solid var(--cream);
     display: flex;
-    align-items: center;
-    gap: 12px;
+    align-items: flex-start;
+    gap: 10px;
     font-weight: 600;
+    font-size: 0.95rem;
+    line-height: 1.4;
 }
 
 .check-icon {
@@ -1117,6 +1121,88 @@ header {
 .price-cta:hover {
     background: var(--coral-deep);
     transform: translateY(-2px);
+    text-decoration: none;
+}
+
+.price-cta-secondary {
+    background: transparent;
+    color: var(--coral);
+    border: 2px solid var(--coral);
+}
+
+.price-cta-secondary:hover {
+    background: var(--coral);
+    color: white;
+}
+
+/* Pricing Grid */
+.pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    max-width: 1000px;
+    margin: 0 auto;
+    align-items: start;
+}
+
+.price-card-featured {
+    border: 3px solid var(--coral);
+    transform: scale(1.05);
+    box-shadow: 0 20px 60px rgba(255, 138, 108, 0.2);
+}
+
+.price-card-featured .price-badge {
+    background: var(--coral);
+    color: white;
+}
+
+.price-period {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-soft);
+}
+
+/* App Store Button */
+.app-store-buttons {
+    display: flex;
+    gap: 16px;
+    margin-top: 8px;
+}
+
+.app-store-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 24px;
+    background: #000;
+    color: white;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.app-store-btn:hover {
+    background: #333;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.app-store-btn svg {
+    fill: white;
+}
+
+.app-store-btn .small {
+    display: block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.app-store-btn .big {
+    display: block;
+    font-size: 1.3rem;
+    font-weight: 700;
+    line-height: 1;
 }
 
 /* Footer */
@@ -1185,6 +1271,20 @@ footer a:hover {
     }
 
     .platform-note {
+        justify-content: center;
+    }
+
+    .pricing-grid {
+        grid-template-columns: 1fr;
+        max-width: 400px;
+    }
+
+    .price-card-featured {
+        transform: scale(1);
+        order: -1;
+    }
+
+    .app-store-buttons {
         justify-content: center;
     }
 }
