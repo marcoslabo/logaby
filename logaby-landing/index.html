@@ -58,18 +58,26 @@
     <!-- Hero -->
     <section class="hero">
         <div class="hero-content">
-            <p class="hero-tagline">Hands full? Just talk.</p>
-            <h1>Track Baby With <span>Your Voice</span></h1>
-            <p class="hero-description">No tapping. No menus. No fumbling with your phone while holding a baby. Just tap
-                the mic and speak naturally—our AI understands you. Track feedings, diapers, sleep, pumping, and
-                more—then share reports with your pediatrician.</p>
+            <p class="hero-tagline">Your baby's first month.</p>
+            <h1>Every Ounce <span>Matters</span></h1>
+            <p class="hero-description">Is she eating enough? Is he actually gaining weight? How many wet diapers today?
+                In those first critical weeks, peace of mind comes from knowing—not guessing. Logaby helps you track
+                every feeding, diaper, and weigh-in effortlessly with just your voice, so you're always ready when your
+                pediatrician asks.</p>
+
+            <!-- First Month Benefits -->
+            <div class="first-month-benefits">
+                <span class="benefit-tag">⚖️ Track weight gain</span>
+                <span class="benefit-tag">🩺 Pediatrician-ready reports</span>
+                <span class="benefit-tag">🗣️ Just tap & speak</span>
+            </div>
 
             <!-- Waitlist Badge -->
             <div class="scarcity-badge" id="scarcityBadge">
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
                     <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                 </svg>
-                <span id="scarcityText">🔥 Join the waitlist for early access!</span>
+                <span id="scarcityText">🍼 Built for the first month—when every detail matters</span>
             </div>
 
             <!-- Waitlist Form -->
@@ -156,19 +164,19 @@
     <section class="problem-section">
         <div class="problem-container">
             <h2 class="section-title">Sound Familiar?</h2>
-            <p class="section-subtitle">You're not alone. Every parent has been there.</p>
+            <p class="section-subtitle">You're not alone. Every new parent worries in those first weeks.</p>
 
             <div class="problems-grid">
                 <div class="problem-card">
                     <div class="problem-icon">
                         <svg viewBox="0 0 24 24" fill="currentColor">
                             <path
-                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                                d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
                         </svg>
                     </div>
-                    <h3>"Wait, when did she eat last?"</h3>
-                    <p>It's 3am. You're exhausted. Your partner asks when the last feeding was. You have no idea. You
-                        forgot to write it down... again.</p>
+                    <h3>"Is she gaining weight?"</h3>
+                    <p>Baby lost 8% at the hospital. The pediatrician said to come back in 3 days. Now you're counting
+                        every ounce, every diaper, hoping she's on track. You need to know—not guess.</p>
                 </div>
                 <div class="problem-card">
                     <div class="problem-icon">
@@ -215,7 +223,7 @@
     <!-- Features -->
     <section class="features">
         <h2 class="section-title">Everything You Need to Track Your Baby</h2>
-        <p class="section-subtitle">Built for exhausted parents who don't have a free hand.</p>
+        <p class="section-subtitle">Built for new parents navigating the critical first weeks.</p>
 
         <div class="features-grid">
             <div class="feature-card">
@@ -334,8 +342,8 @@
 
     <!-- Dashboard Preview -->
     <section class="dashboard-section">
-        <h2 class="section-title">Your Day, At a Glance</h2>
-        <p class="section-subtitle">No more "wait, when did she eat last?"</p>
+        <h2 class="section-title">Know Exactly Where Baby Stands</h2>
+        <p class="section-subtitle">Walk into every pediatrician visit with confidence.</p>
 
         <div class="dashboard-preview">
             <div class="dashboard-header">
@@ -375,14 +383,14 @@
     <!-- Pricing -->
     <section class="pricing">
         <h2 class="section-title">Simple, Honest Pricing</h2>
-        <p class="section-subtitle">🚀 Launching soon! Join the waitlist today.</p>
+        <p class="section-subtitle">One price. Full access. Peace of mind for the months that matter most.</p>
 
-        <div class="pricing-grid">
+        <div class="pricing-grid pricing-grid-two">
             <!-- Free Trial -->
             <div class="price-card">
-                <div class="price-badge">Start Here</div>
+                <div class="price-badge">Try It Free</div>
                 <div class="price-amount">Free</div>
-                <p class="price-note">7-day trial • All features</p>
+                <p class="price-note">7-day trial • All features included</p>
 
                 <ul class="price-features">
                     <li>
@@ -407,83 +415,57 @@
                         <span class="check-icon"><svg viewBox="0 0 24 24">
                                 <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                             </svg></span>
-                        PDF reports
+                        Pediatrician-ready PDF reports
                     </li>
                 </ul>
 
-                <a href="#" class="price-cta price-cta-secondary">Start Free Trial</a>
+                <a href="#waitlistForm" class="price-cta price-cta-secondary"
+                    onclick="document.getElementById('waitlistForm').scrollIntoView({behavior: 'smooth'}); return false;">Start
+                    Free Trial</a>
             </div>
 
-            <!-- Monthly -->
+            <!-- First Months Pass -->
             <div class="price-card price-card-featured">
-                <div class="price-badge">Most Popular</div>
-                <div class="price-amount">$4<span>.99</span><span class="price-period">/month</span></div>
-                <p class="price-note">Cancel anytime</p>
-
-                <ul class="price-features">
-                    <li>
-                        <span class="check-icon"><svg viewBox="0 0 24 24">
-                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-                            </svg></span>
-                        All features, always
-                    </li>
-                    <li>
-                        <span class="check-icon"><svg viewBox="0 0 24 24">
-                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-                            </svg></span>
-                        AI voice logging
-                    </li>
-                    <li>
-                        <span class="check-icon"><svg viewBox="0 0 24 24">
-                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-                            </svg></span>
-                        Unlimited history
-                    </li>
-                    <li>
-                        <span class="check-icon"><svg viewBox="0 0 24 24">
-                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-                            </svg></span>
-                        Family sync & PDF reports
-                    </li>
-                </ul>
-
-                <a href="#" class="price-cta">Subscribe Now</a>
-            </div>
-
-            <!-- Lifetime -->
-            <div class="price-card">
-                <div class="price-badge">Best Value</div>
+                <div class="price-badge">🍼 First Months Pass</div>
                 <div class="price-amount">$19<span>.99</span></div>
-                <p class="price-note">One-time. Forever.</p>
+                <p class="price-note">6 months of full access • Just $3.33/month</p>
 
                 <ul class="price-features">
                     <li>
                         <span class="check-icon"><svg viewBox="0 0 24 24">
                                 <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                             </svg></span>
-                        All features, forever
+                        All features for 6 months
                     </li>
                     <li>
                         <span class="check-icon"><svg viewBox="0 0 24 24">
                                 <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                             </svg></span>
-                        No monthly fees ever
+                        AI voice logging—just tap & speak
                     </li>
                     <li>
                         <span class="check-icon"><svg viewBox="0 0 24 24">
                                 <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                             </svg></span>
-                        Free updates for life
+                        Weight tracking & diaper counts
                     </li>
                     <li>
                         <span class="check-icon"><svg viewBox="0 0 24 24">
                                 <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                             </svg></span>
-                        Pay once, use forever
+                        Family sync + PDF reports
+                    </li>
+                    <li>
+                        <span class="check-icon"><svg viewBox="0 0 24 24">
+                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                            </svg></span>
+                        Peace of mind for the critical months
                     </li>
                 </ul>
 
-                <a href="#" class="price-cta price-cta-secondary">Get Lifetime Access</a>
+                <a href="#waitlistForm" class="price-cta"
+                    onclick="document.getElementById('waitlistForm').scrollIntoView({behavior: 'smooth'}); return false;">Get
+                    the First Months Pass</a>
             </div>
         </div>
     </section>
