@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support - Logaby</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --coral: #FF8A6C;
+            --coral-deep: #E56B4E;
+            --cream: #FFFBF7;
+            --sage: #B8D4C8;
+            --text-dark: #2D2926;
+            --text-soft: #6B6560;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--cream);
+            color: var(--text-dark);
+            line-height: 1.7;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 60px 24px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+            color: var(--coral);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-soft);
+            margin-bottom: 40px;
+        }
+
+        .support-card {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .support-card h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .support-card p {
+            color: var(--text-soft);
+            margin-bottom: 16px;
+        }
+
+        .support-card a {
+            color: var(--coral);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .support-card a:hover {
+            text-decoration: underline;
+        }
+
+        .icon {
+            width: 40px;
+            height: 40px;
+            background: var(--sage);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 40px;
+            color: var(--coral);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .faq {
+            margin-top: 40px;
+        }
+
+        .faq h2 {
+            font-size: 1.5rem;
+            margin-bottom: 24px;
+        }
+
+        .faq-item {
+            margin-bottom: 24px;
+        }
+
+        .faq-item h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .faq-item p {
+            color: var(--text-soft);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← Back to Logaby</a>
+
+        <h1>Support</h1>
+        <p class="subtitle">We're here to help! Reach out anytime.</p>
+
+        <div class="support-card">
+            <h2><span class="icon">📧</span> Email Us</h2>
+            <p>Have a question, bug report, or feature request? Send us an email and we'll get back to you within 24
+                hours.</p>
+            <a href="mailto:support@logaby.com">support@logaby.com</a>
+        </div>
+
+        <div class="support-card">
+            <h2><span class="icon">💡</span> Feature Requests</h2>
+            <p>We love hearing your ideas! Tell us what features would make Logaby better for you and your family.</p>
+            <a href="mailto:support@logaby.com?subject=Feature Request">Submit a feature request →</a>
+        </div>
+
+        <div class="faq">
+            <h2>Frequently Asked Questions</h2>
+
+            <div class="faq-item">
+                <h3>Is my baby's data private?</h3>
+                <p>Yes! All data is stored locally on your device. It never leaves your phone unless you choose to use
+                    Family Sync to share with your partner.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>How do I restore my purchase?</h3>
+                <p>Go to Settings → Restore Purchases. Your subscription will be restored automatically if you're signed
+                    into the same Apple ID.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>Can I sync with my partner?</h3>
+                <p>Yes! Go to Settings → Create Family, then share the invite code with your partner. They'll enter it
+                    in Settings → Join Family.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>What happens if I delete the app?</h3>
+                <p>Your local data will be deleted. If you're using Family Sync, your data is also stored in the cloud
+                    and will be available when you reinstall.</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>How do I cancel my subscription?</h3>
+                <p>Subscriptions are managed through Apple. Go to iPhone Settings → [Your Name] → Subscriptions → Logaby
+                    → Cancel.</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
