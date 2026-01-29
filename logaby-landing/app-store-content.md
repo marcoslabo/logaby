@@ -77,10 +77,11 @@ We know the struggle. We've been up at 3am trying to remember when the last feed
 💰 SIMPLE PRICING
 
 Try everything FREE for 7 days. Then:
-• $4.99/month - Cancel anytime
-• $19.99 lifetime - Pay once, use forever
+• $19.99 for 6 months — the "First Months Pass"
 
-We'll email you before your trial ends so you don't forget.
+That's just $3.33/month for peace of mind during the most critical time.
+
+No auto-renewal. No surprises.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -109,9 +110,9 @@ Thanks for using Logaby! Leave a review if you love it ❤️
 ---
 
 ## URLs Needed
-- Support: https://logaby.app/support
-- Marketing: https://logaby.app
-- Privacy: https://logaby.app/privacy
+- Support: https://logaby.com/support.html ✅
+- Marketing: https://logaby.com ✅
+- Privacy: https://logaby.com/privacy.html ✅
 
 ---
 

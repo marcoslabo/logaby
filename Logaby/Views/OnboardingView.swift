@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// Onboarding screen with 3 swipeable slides
+/// Onboarding screen with 4 swipeable slides
 struct OnboardingView: View {
     @State private var currentPage = 0
     let onComplete: () -> Void
@@ -21,34 +21,42 @@ struct OnboardingView: View {
             // Pages
             TabView(selection: $currentPage) {
                 OnboardingPage(
-                    icon: "mic.fill",
+                    icon: "scalemass.fill",
                     iconColor: AppColors.primary,
-                    title: "Voice-First Logging",
-                    description: "Track feedings, diapers, and sleep with your voice. Perfect for those 3am moments."
+                    title: "Every Ounce Matters",
+                    description: "Is she eating enough? Is he gaining weight?\n\nIn the first weeks, peace of mind comes from knowing—not guessing."
                 )
                 .tag(0)
                 
                 OnboardingPage(
-                    icon: "waveform",
+                    icon: "mic.fill",
                     iconColor: AppColors.sage,
-                    title: "Hands-Free with Siri",
-                    description: "\"Hey Siri, tell Logaby 4oz bottle\"\n\nLog without unlocking your phone."
+                    title: "Just Speak",
+                    description: "\"Fed 4oz bottle\"\n\"Wet diaper\"\n\"She weighs 8 pounds 2 ounces\"\n\nHands full at 3am? Just tap and talk."
                 )
                 .tag(1)
                 
                 OnboardingPage(
-                    icon: "chart.line.uptrend.xyaxis",
+                    icon: "heart.text.square.fill",
                     iconColor: AppColors.lavender,
-                    title: "Track Everything",
-                    description: "See daily summaries, browse history, and never miss a detail about your little one."
+                    title: "Ready for the Pediatrician",
+                    description: "How many wet diapers? How much did she eat?\n\nWalk into every visit with the answers they need."
                 )
                 .tag(2)
+                
+                OnboardingPage(
+                    icon: "person.2.fill",
+                    iconColor: AppColors.feedingAccent,
+                    title: "Private & Secure",
+                    description: "Your data stays on your phone—always private.\n\nOptionally sync with your partner so everyone stays on the same page."
+                )
+                .tag(3)
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
             
             // Page indicators
             HStack(spacing: 8) {
-                ForEach(0..<3) { index in
+                ForEach(0..<4) { index in
                     RoundedRectangle(cornerRadius: 4)
                         .fill(currentPage == index ? AppColors.primary : AppColors.primary.opacity(0.3))
                         .frame(width: currentPage == index ? 24 : 8, height: 8)
@@ -59,7 +67,7 @@ struct OnboardingView: View {
             
             // Next button
             Button {
-                if currentPage < 2 {
+                if currentPage < 3 {
                     withAnimation {
                         currentPage += 1
                     }
@@ -67,7 +75,7 @@ struct OnboardingView: View {
                     onComplete()
                 }
             } label: {
-                Text(currentPage == 2 ? "Get Started" : "Next")
+                Text(currentPage == 3 ? "Get Started" : "Next")
                     .font(AppFonts.titleLarge())
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)

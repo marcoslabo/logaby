@@ -59,9 +59,14 @@ actor ClaudeParserService {
             throw ClaudeError.parseError
         }
         
+        // Debug: Log fields from AI response
+        print("🤖 AI Response - type: \(type), amount_oz: \(parsed["amount_oz"] ?? "nil"), amount_ml: \(parsed["amount_ml"] ?? "nil")")
+        print("🤖 AI Response - at_hour: \(parsed["at_hour"] ?? "nil"), at_minute: \(parsed["at_minute"] ?? "nil")")
+        
         return ParsedActivity(
             type: type,
             amountOz: parsed["amount_oz"] as? Double,
+            amountMl: parsed["amount_ml"] as? Double,  // NEW: handle ml
             durationMinutes: parsed["duration_minutes"] as? Int,
             side: parsed["side"] as? String,
             content: parsed["content"] as? String,
@@ -85,6 +90,7 @@ actor ClaudeParserService {
 struct ParsedActivity {
     let type: String
     let amountOz: Double?
+    let amountMl: Double?  // NEW: handle ml separately
     let durationMinutes: Int?
     let side: String?
     let content: String?
@@ -106,7 +112,15 @@ struct ParsedActivity {
         
         switch type {
         case "feeding":
-            guard let oz = amountOz else { return nil }
+            // Convert ml to oz if needed (30ml = 1oz)
+            var oz: Double
+            if let mlAmount = amountMl {
+                oz = mlAmount / 30.0  // Convert ml to oz
+            } else if let ozAmount = amountOz {
+                oz = ozAmount
+            } else {
+                return nil
+            }
             var bottleContent: BottleContent? = nil
             if content == "formula" { bottleContent = .formula }
             else if content == "breastmilk" { bottleContent = .breastmilk }
@@ -140,10 +154,19 @@ struct ParsedActivity {
             return .weight(Weight(timestamp: timestamp, weightLbs: lbs))
             
         case "pumping":
+            // Convert ml to oz if needed (30ml = 1oz)
+            var oz: Double
+            if let mlAmount = amountMl {
+                oz = mlAmount / 30.0  // Convert ml to oz
+            } else if let ozAmount = amountOz {
+                oz = ozAmount
+            } else {
+                oz = 0
+            }
             let pumpingSide = parsePumpingSide()
             return .pumping(Pumping(
                 timestamp: timestamp,
-                amountOz: amountOz ?? 0,
+                amountOz: oz,
                 durationMinutes: durationMinutes,
                 side: pumpingSide
             ))
