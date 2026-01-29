@@ -202,8 +202,28 @@ header {
 .hero-description {
     font-size: 1.25rem;
     color: var(--text-soft);
-    margin-bottom: 32px;
-    max-width: 480px;
+    margin-bottom: 24px;
+    max-width: 520px;
+}
+
+/* First Month Benefits */
+.first-month-benefits {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 28px;
+}
+
+.benefit-tag {
+    background: var(--sage);
+    color: var(--text-dark);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 
 /* Scarcity Badge */
@@ -1145,9 +1165,15 @@ header {
     align-items: start;
 }
 
+/* Two-column pricing grid variant */
+.pricing-grid-two {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 800px;
+}
+
 .price-card-featured {
     border: 3px solid var(--coral);
-    transform: scale(1.05);
+    transform: scale(1.02);
     box-shadow: 0 20px 60px rgba(255, 138, 108, 0.2);
 }
 
