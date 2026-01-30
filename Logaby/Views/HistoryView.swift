@@ -178,10 +178,10 @@ struct FilterChip: View {
         Button(action: action) {
             Text(label)
                 .font(AppFonts.labelLarge())
-                .foregroundColor(isSelected ? .white : color)
+                .foregroundColor(isSelected ? .white : AppColors.textDark)
                 .padding(.horizontal, Spacing.md)
                 .padding(.vertical, Spacing.sm)
-                .background(isSelected ? color : color.opacity(0.1))
+                .background(isSelected ? color : color.opacity(0.2))
                 .cornerRadius(20)
         }
     }
