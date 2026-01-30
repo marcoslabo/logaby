@@ -18,6 +18,9 @@
 		1F1DDC1F1F9724352F4EE426 /* SpeechRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D3404673F41D126060CB385 /* SpeechRecognizer.swift */; };
 		1F79D9A41B0B287A57C1E02B /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 48B236506F820411C2930A32 /* HomeView.swift */; };
 		26682F77E1A43C1D2F28EE76 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D5EC3ECB8C784C46615F0762 /* Assets.xcassets */; };
+		2A42DF272F2C0301003C8B83 /* Products.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 2A42DF262F2C0301003C8B83 /* Products.storekit */; };
+		2A42DF2B2F2C0401003C8B83 /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A42DF2A2F2C0401003C8B83 /* PaywallView.swift */; };
+		2A42DF2D2F2C0427003C8B83 /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A42DF2C2F2C0427003C8B83 /* SubscriptionManager.swift */; };
 		2AF616980022E368CCEBEC35 /* ActivityRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DCD8834C4E7834161663A25 /* ActivityRow.swift */; };
 		3196787D0C4F676E374B7774 /* ActivityRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7FAC503A6412CC0A67302058 /* ActivityRepository.swift */; };
 		36924B2A6ED3FF6133D895DB /* Diaper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8E13DD9437E7B9B9F5F87D3 /* Diaper.swift */; };
@@ -61,6 +64,9 @@
 		06A092B3BFC1F434486F10B1 /* TimeExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeExtractor.swift; sourceTree = "<group>"; };
 		21C4FE2CE14C1871FCDE27D6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		282031B048ED2A14EB6BE8CC /* TutorialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialView.swift; sourceTree = "<group>"; };
+		2A42DF262F2C0301003C8B83 /* Products.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Products.storekit; sourceTree = "<group>"; };
+		2A42DF2A2F2C0401003C8B83 /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
+		2A42DF2C2F2C0427003C8B83 /* SubscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionManager.swift; sourceTree = "<group>"; };
 		2AF37B454F43850E8A96E3B5 /* ScheduleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleView.swift; sourceTree = "<group>"; };
 		3463C29C18304574A039F1EF /* Logaby.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Logaby.entitlements; sourceTree = "<group>"; };
 		34C33516440089C408C39D09 /* SupabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseService.swift; sourceTree = "<group>"; };
@@ -127,6 +133,7 @@
 		4FC2873AB0C6244873F5E106 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				2A42DF2C2F2C0427003C8B83 /* SubscriptionManager.swift */,
 				7FAC503A6412CC0A67302058 /* ActivityRepository.swift */,
 				968598CEE948D7F4F6BA2089 /* ClaudeParserService.swift */,
 				0022965E16564376D8C0F035 /* DiaperParser.swift */,
@@ -208,6 +215,7 @@
 		DCAC22F855CEE3D685648758 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				2A42DF2A2F2C0401003C8B83 /* PaywallView.swift */,
 				392DBF68E1129770562E3DC4 /* EditActivitySheet.swift */,
 				8946CDD198A7D5A3F735FAC1 /* HistoryView.swift */,
 				48B236506F820411C2930A32 /* HomeView.swift */,
@@ -225,6 +233,7 @@
 		EEF9751AB4CAFF4EA451C14A = {
 			isa = PBXGroup;
 			children = (
+				2A42DF262F2C0301003C8B83 /* Products.storekit */,
 				8EDBAF9CA2B45421860824BF /* Logaby */,
 				AB82C8C45D997822230B695E /* Products */,
 			);
@@ -294,6 +303,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2A42DF272F2C0301003C8B83 /* Products.storekit in Resources */,
 				26682F77E1A43C1D2F28EE76 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -305,6 +315,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2A42DF2D2F2C0427003C8B83 /* SubscriptionManager.swift in Sources */,
 				78F7A4D023CFB01FFDC43139 /* Activity.swift in Sources */,
 				3196787D0C4F676E374B7774 /* ActivityRepository.swift in Sources */,
 				2AF616980022E368CCEBEC35 /* ActivityRow.swift in Sources */,
@@ -344,6 +355,7 @@
 				793467E1A2022A02B3FE0801 /* TutorialView.swift in Sources */,
 				F3BA09088510D704916B9FEB /* VoiceInputSheet.swift in Sources */,
 				3D48F3BF111E7C98EF47B9AE /* VoiceParser.swift in Sources */,
+				2A42DF2B2F2C0401003C8B83 /* PaywallView.swift in Sources */,
 				C28501B04E078D07D35A6ADC /* WalkthroughOverlay.swift in Sources */,
 				707B5734769CD764437206F7 /* Weight.swift in Sources */,
 				AE6E9690F6E141A02F9EE1BA /* WeightParser.swift in Sources */,
@@ -417,7 +429,7 @@
 				CODE_SIGN_ENTITLEMENTS = Logaby/Logaby.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 11;
 				INFOPLIST_FILE = Logaby/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -437,7 +449,7 @@
 				CODE_SIGN_ENTITLEMENTS = Logaby/Logaby.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 11;
 				INFOPLIST_FILE = Logaby/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

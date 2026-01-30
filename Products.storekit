@@ -1,0 +1,36 @@
+{
+  "identifier" : "com.logaby.app.products",
+  "nonRenewingSubscriptions" : [
+    {
+      "displayPrice" : "19.99",
+      "familyShareable" : false,
+      "internalID" : "firstmonthspass",
+      "localizations" : [
+        {
+          "description" : "Full access to all Logaby features for 6 months",
+          "displayName" : "First Months Pass",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.logaby.app.firstmonthspass",
+      "referenceName" : "First Months Pass",
+      "type" : "NonRenewingSubscription"
+    }
+  ],
+  "products" : [
+
+  ],
+  "settings" : {
+    "_failTransactionsEnabled" : false,
+    "_locale" : "en_US",
+    "_storefront" : "USA",
+    "_storeKitErrors" : []
+  },
+  "subscriptionGroups" : [
+
+  ],
+  "version" : {
+    "major" : 3,
+    "minor" : 0
+  }
+}

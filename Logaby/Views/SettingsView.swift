@@ -1,21 +1,113 @@
 import SwiftUI
 import SwiftData
 
-/// Settings screen with data management and Siri shortcut setup
+/// Settings screen with subscription management, family sync, and support
 struct SettingsView: View {
     @ObservedObject var repository: ActivityRepository
     @ObservedObject var familyService = FamilyService.shared
-    @State private var showSiriInstructions = false
-    @State private var showClearConfirmation = false
+    @StateObject private var subscriptionManager = SubscriptionManager.shared
+    @State private var showPaywall = false
     @State private var showCreateFamily = false
     @State private var showJoinFamily = false
     @State private var familyName = ""
     @State private var inviteCode = ""
     @State private var errorMessage: String?
+    @State private var showRestoreSuccess = false
     
     var body: some View {
         NavigationStack {
             List {
+                // Subscription Section
+                Section {
+                    if subscriptionManager.hasActiveSubscription {
+                        // Active subscription
+                        VStack(alignment: .leading, spacing: Spacing.xs) {
+                            HStack {
+                                Image(systemName: "checkmark.seal.fill")
+                                    .foregroundColor(AppColors.sage)
+                                Text("First Months Pass")
+                                    .font(AppFonts.titleLarge())
+                                    .foregroundColor(AppColors.textDark)
+                            }
+                            Text("You have full access to all features")
+                                .font(AppFonts.bodySmall())
+                                .foregroundColor(AppColors.textSoft)
+                        }
+                        .padding(.vertical, Spacing.xs)
+                    } else if subscriptionManager.isTrialActive {
+                        // Trial active
+                        VStack(alignment: .leading, spacing: Spacing.xs) {
+                            HStack {
+                                Image(systemName: "clock.fill")
+                                    .foregroundColor(.orange)
+                                Text("Free Trial")
+                                    .font(AppFonts.titleLarge())
+                                    .foregroundColor(AppColors.textDark)
+                            }
+                            Text("\(subscriptionManager.trialDaysRemaining) days remaining")
+                                .font(AppFonts.bodySmall())
+                                .foregroundColor(AppColors.textSoft)
+                            
+                            Button {
+                                showPaywall = true
+                            } label: {
+                                Text("Upgrade to First Months Pass")
+                                    .font(AppFonts.labelLarge())
+                                    .foregroundColor(AppColors.primary)
+                            }
+                            .padding(.top, Spacing.xs)
+                        }
+                        .padding(.vertical, Spacing.xs)
+                    } else {
+                        // Trial expired
+                        VStack(alignment: .leading, spacing: Spacing.xs) {
+                            Text("Trial Expired")
+                                .font(AppFonts.titleLarge())
+                                .foregroundColor(AppColors.textDark)
+                            Text("Subscribe to continue using voice logging")
+                                .font(AppFonts.bodySmall())
+                                .foregroundColor(AppColors.textSoft)
+                            
+                            Button {
+                                showPaywall = true
+                            } label: {
+                                Text("Get the First Months Pass — $19.99")
+                                    .font(AppFonts.labelLarge())
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, Spacing.md)
+                                    .padding(.vertical, Spacing.sm)
+                                    .background(AppColors.primary)
+                                    .cornerRadius(12)
+                            }
+                            .padding(.top, Spacing.xs)
+                        }
+                        .padding(.vertical, Spacing.xs)
+                    }
+                    
+                    // Restore Purchases (always show)
+                    Button {
+                        Task {
+                            await subscriptionManager.restorePurchases()
+                            if subscriptionManager.hasActiveSubscription {
+                                showRestoreSuccess = true
+                            }
+                        }
+                    } label: {
+                        HStack {
+                            Image(systemName: "arrow.clockwise")
+                                .foregroundColor(AppColors.primary)
+                            Text("Restore Purchases")
+                                .foregroundColor(AppColors.primary)
+                            Spacer()
+                            if subscriptionManager.isLoading {
+                                ProgressView()
+                            }
+                        }
+                    }
+                } header: {
+                    Text("Subscription")
+                }
+                
                 // Sync Section
                 Section {
                     if let family = familyService.currentFamily {
@@ -77,7 +169,9 @@ struct SettingsView: View {
                         }
                     }
                 } header: {
-                    Text("Multi-Parent Sync")
+                    Text("Family Sync")
+                } footer: {
+                    Text("Data stays on your device unless you choose to sync with family")
                 }
                 
                 // Schedule section
@@ -110,20 +204,6 @@ struct SettingsView: View {
                     Text("Schedule")
                 }
                 
-                // Voice Shortcuts section
-                Section {
-                    SettingsTile(
-                        icon: "mic.fill",
-                        iconColor: AppColors.primary,
-                        title: "Add Siri Shortcut",
-                        subtitle: "Log activities hands-free"
-                    ) {
-                        showSiriInstructions = true
-                    }
-                } header: {
-                    Text("Voice Shortcuts")
-                }
-                
                 // Data section
                 Section {
                     SettingsTile(
@@ -134,34 +214,80 @@ struct SettingsView: View {
                     ) {
                         // TODO: Implement export
                     }
-                    
-                    SettingsTile(
-                        icon: "trash",
-                        iconColor: AppColors.error,
-                        title: "Clear All Data",
-                        subtitle: "Remove all logged activities"
-                    ) {
-                        showClearConfirmation = true
-                    }
                 } header: {
                     Text("Data")
                 }
                 
                 // About section
                 Section {
-                    SettingsTile(
-                        icon: "hand.raised",
-                        iconColor: AppColors.lavender,
-                        title: "Privacy Policy",
-                        subtitle: nil
-                    ) {}
+                    Link(destination: URL(string: "https://logaby.com/privacy.html")!) {
+                        HStack(spacing: Spacing.md) {
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(AppColors.lavender.opacity(0.15))
+                                .frame(width: 44, height: 44)
+                                .overlay(
+                                    Image(systemName: "hand.raised")
+                                        .foregroundColor(AppColors.lavender)
+                                )
+                            
+                            Text("Privacy Policy")
+                                .font(AppFonts.titleLarge())
+                                .foregroundColor(AppColors.textDark)
+                            
+                            Spacer()
+                            
+                            Image(systemName: "arrow.up.right")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundColor(AppColors.textLight)
+                        }
+                        .padding(.vertical, Spacing.xs)
+                    }
                     
-                    SettingsTile(
-                        icon: "questionmark.circle",
-                        iconColor: AppColors.textSoft,
-                        title: "Support",
-                        subtitle: nil
-                    ) {}
+                    Link(destination: URL(string: "https://logaby.com/support.html")!) {
+                        HStack(spacing: Spacing.md) {
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(AppColors.primary.opacity(0.15))
+                                .frame(width: 44, height: 44)
+                                .overlay(
+                                    Image(systemName: "questionmark.circle")
+                                        .foregroundColor(AppColors.primary)
+                                )
+                            
+                            Text("Help & Support")
+                                .font(AppFonts.titleLarge())
+                                .foregroundColor(AppColors.textDark)
+                            
+                            Spacer()
+                            
+                            Image(systemName: "arrow.up.right")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundColor(AppColors.textLight)
+                        }
+                        .padding(.vertical, Spacing.xs)
+                    }
+                    
+                    Link(destination: URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!) {
+                        HStack(spacing: Spacing.md) {
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(AppColors.textSoft.opacity(0.15))
+                                .frame(width: 44, height: 44)
+                                .overlay(
+                                    Image(systemName: "doc.text")
+                                        .foregroundColor(AppColors.textSoft)
+                                )
+                            
+                            Text("Terms of Use")
+                                .font(AppFonts.titleLarge())
+                                .foregroundColor(AppColors.textDark)
+                            
+                            Spacer()
+                            
+                            Image(systemName: "arrow.up.right")
+                                .font(.system(size: 14, weight: .semibold))
+                                .foregroundColor(AppColors.textLight)
+                        }
+                        .padding(.vertical, Spacing.xs)
+                    }
                 } header: {
                     Text("About")
                 }
@@ -183,16 +309,8 @@ struct SettingsView: View {
             .background(AppColors.background)
             .navigationTitle("Settings")
         }
-        .sheet(isPresented: $showSiriInstructions) {
-            SiriInstructionsSheet()
-        }
-        .alert("Clear All Data?", isPresented: $showClearConfirmation) {
-            Button("Cancel", role: .cancel) {}
-            Button("Clear", role: .destructive) {
-                repository.clearAll()
-            }
-        } message: {
-            Text("This will permanently delete all your logged activities. This action cannot be undone.")
+        .sheet(isPresented: $showPaywall) {
+            PaywallView()
         }
         .alert("Create Family", isPresented: $showCreateFamily) {
             TextField("Family Name", text: $familyName)
@@ -231,6 +349,11 @@ struct SettingsView: View {
             Button("OK") { errorMessage = nil }
         } message: {
             Text(errorMessage ?? "Unknown error")
+        }
+        .alert("Purchases Restored", isPresented: $showRestoreSuccess) {
+            Button("OK") { }
+        } message: {
+            Text("Your First Months Pass has been restored.")
         }
     }
 }
@@ -277,88 +400,6 @@ struct SettingsTile: View {
             }
             .padding(.vertical, Spacing.xs)
         }
-    }
-}
-
-// MARK: - Siri Instructions Sheet
-
-struct SiriInstructionsSheet: View {
-    @Environment(\.dismiss) private var dismiss
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // Handle bar
-            HStack {
-                Spacer()
-                RoundedRectangle(cornerRadius: 2)
-                    .fill(AppColors.divider)
-                    .frame(width: 40, height: 4)
-                Spacer()
-            }
-            .padding(.top, Spacing.sm)
-            
-            Spacer().frame(height: Spacing.lg)
-            
-            Text("Set Up Siri")
-                .font(AppFonts.headlineLarge())
-                .foregroundColor(AppColors.textDark)
-            
-            Spacer().frame(height: Spacing.md)
-            
-            Text("To log activities when your phone is locked:")
-                .font(AppFonts.bodyLarge())
-                .foregroundColor(AppColors.textSoft)
-            
-            Spacer().frame(height: Spacing.lg)
-            
-            InstructionStep(number: "1", text: "Open the Shortcuts app on your iPhone")
-            InstructionStep(number: "2", text: "Tap + to create a new shortcut")
-            InstructionStep(number: "3", text: "Search for \"Logaby\" and add the action")
-            InstructionStep(number: "4", text: "Say \"Hey Siri, tell Logaby 4oz bottle\"")
-            
-            Spacer()
-            
-            Button {
-                dismiss()
-            } label: {
-                Text("Got it")
-                    .font(AppFonts.titleLarge())
-                    .foregroundColor(.white)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 56)
-                    .background(AppColors.primary)
-                    .cornerRadius(16)
-            }
-        }
-        .padding(Spacing.lg)
-        .background(AppColors.cardBackground)
-        .presentationDetents([.height(400)])
-        .presentationDragIndicator(.hidden)
-    }
-}
-
-// MARK: - Instruction Step
-
-struct InstructionStep: View {
-    let number: String
-    let text: String
-    
-    var body: some View {
-        HStack(spacing: Spacing.md) {
-            Circle()
-                .fill(AppColors.primary.opacity(0.15))
-                .frame(width: 28, height: 28)
-                .overlay(
-                    Text(number)
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundColor(AppColors.primary)
-                )
-            
-            Text(text)
-                .font(AppFonts.bodyLarge())
-                .foregroundColor(AppColors.textDark)
-        }
-        .padding(.bottom, Spacing.md)
     }
 }
 

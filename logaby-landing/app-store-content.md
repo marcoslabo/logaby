@@ -21,70 +21,122 @@ baby tracker,newborn,feeding log,diaper,sleep tracker,pumping,breastfeed,nursing
 ## App Description (4000 chars max)
 
 ```
-TRACK YOUR BABY WITH YOUR VOICE
+IS SHE EATING ENOUGH?
 
-No more fumbling with your phone while holding a crying baby at 3am. Just tap the microphone and speak naturally—our AI understands you.
+That question haunts you at 3am.
 
-"She ate 4 ounces"
-"Wet diaper just now"
+You're exhausted. Sleep-deprived. Holding a crying baby while trying to remember—was the last feeding 2 hours ago or 3? Did she finish the bottle? When was the last wet diaper?
+
+You try to track it. You really do.
+
+But every baby tracker app wants you to tap through 17 screens while your baby screams. Your hands are full. Your brain is mush. And that "simple" app? It's anything but simple at 3am.
+
+So you give up. You guess. And the anxiety builds.
+
+"Is she gaining weight?"
+"Am I feeding her enough?"
+"What do I even tell the pediatrician?"
+
+Sound familiar?
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+HERE'S THE TRUTH:
+
+You don't have a tracking problem.
+You have a LOGGING problem.
+
+Every baby tracker works great—if you have two free hands, a clear head, and 30 seconds to spare.
+
+But you don't.
+
+You have a baby in one arm, a bottle in the other, and exactly zero patience for tiny buttons and complicated menus.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+LOGABY IS DIFFERENT.
+
+Tap the microphone. Speak. Done.
+
+"She ate 4 ounces at 2pm"
+"Wet diaper"
 "Baby is going down for a nap"
+"He weighs 8 pounds 7 ounces"
 
-Done. Logged. Synced.
+Our AI understands natural speech. No rigid commands. No learning curve. Just say what happened like you'd tell your partner—and we log it instantly.
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🤖 AI-POWERED VOICE LOGGING
-
-Logaby uses advanced AI to understand natural speech. No rigid commands or complicated menus. Just say what happened, and we'll categorize it for you.
-
-• Feedings (bottle & breastfeeding)
-• Diaper changes (wet, dirty, dry)
-• Sleep & naps
-• Pumping sessions
-• Weight tracking
+One tap. One sentence. Back to your baby.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-👨‍👩‍👧 FAMILY SYNC
+WHAT LOGABY TRACKS:
 
-Everyone stays on the same page. Mom, Dad, grandma, the nanny—all caregivers see updates in real-time. No more "did you feed her?" texts.
+◉ Feedings — bottles, breastfeeding, amounts in oz or ml
+◉ Diapers — wet, dirty, or mixed
+◉ Sleep — naps and nighttime, with duration
+◉ Pumping — for breastfeeding moms
+◉ Weight — track growth over time
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-📊 SHARE WITH YOUR PEDIATRICIAN
-
-Generate beautiful PDF reports to share with your doctor. Track patterns, spot trends, and have real data for your next checkup.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🎯 BUILT FOR EXHAUSTED PARENTS
-
-We know the struggle. We've been up at 3am trying to remember when the last feeding was. That's why we built Logaby—the baby tracker that works when your hands are full.
+All from your voice. All in seconds.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-✨ KEY FEATURES
+KEEP EVERYONE IN SYNC
 
-• AI voice recognition - just speak naturally
-• Track feedings, diapers, sleep, pumping
-• Family sync - share with caregivers
-• PDF reports for pediatricians
-• Beautiful dashboard with daily summaries
-• Works offline - sync when you're back online
+Mom knows. Dad knows. Grandma knows.
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Share an invite code and everyone sees the same data in real-time. No more "did you feed her?" texts. No more guessing what happened during your partner's shift.
 
-💰 SIMPLE PRICING
-
-Try everything FREE for 7 days. Then:
-• $4.99/month - Cancel anytime
-• $19.99 lifetime - Pay once, use forever
-
-We'll email you before your trial ends so you don't forget.
+One baby. One log. Everyone aligned.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Download Logaby today and finally have a free hand.
+IMPRESS YOUR PEDIATRICIAN
+
+Generate beautiful PDF reports with one tap. Show up to your next checkup with REAL data:
+
+• Total feedings per day
+• Average sleep duration
+• Weight gain over time
+• Diaper patterns
+
+Your doctor will love you. And you'll finally have answers instead of "I think she's eating okay?"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+NO ACCOUNT NEEDED
+
+Your data stays on YOUR phone. We don't harvest your baby's information. No email required. No login walls.
+
+Just download and start logging.
+
+(Family sync uses end-to-end encryption if you choose to enable it.)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SIMPLE PRICING
+
+Try everything FREE for 7 days.
+
+Then: $19.99 for 6 months.
+
+That's $3.33/month for peace of mind during the most exhausting, beautiful, chaotic months of your life.
+
+• No subscription traps
+• No auto-renewal
+• No hidden fees
+
+Just 6 months of knowing instead of guessing.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+THE FIRST MONTHS MATTER.
+
+You'll never get this time back. You deserve to be present—not stressed about tracking.
+
+Download Logaby. Tap. Speak. Done.
+
+Your baby (and your sanity) will thank you.
 ```
 
 ---
@@ -109,9 +161,9 @@ Thanks for using Logaby! Leave a review if you love it ❤️
 ---
 
 ## URLs Needed
-- Support: https://logaby.app/support
-- Marketing: https://logaby.app
-- Privacy: https://logaby.app/privacy
+- Support: https://logaby.com/support.html ✅
+- Marketing: https://logaby.com ✅
+- Privacy: https://logaby.com/privacy.html ✅
 
 ---
 

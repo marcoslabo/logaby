@@ -4,12 +4,12 @@ import SwiftData
 /// Home screen - Dashboard showing today's summary and recent activity
 struct HomeView: View {
     @ObservedObject var repository: ActivityRepository
+    @StateObject private var subscriptionManager = SubscriptionManager.shared
     @State private var summary: DailySummary = .empty
     @State private var recentActivities: [Activity] = []
     @State private var showVoiceInput = false
-    @State private var showTutorial = false
+    @State private var showPaywall = false
     @State private var showWalkthrough = false
-    @AppStorage("hasSeenTutorial") private var hasSeenTutorial = false
     @AppStorage("hasSeenWalkthrough") private var hasSeenWalkthrough = false
     
     var body: some View {
@@ -18,6 +18,11 @@ struct HomeView: View {
                 VStack(alignment: .leading, spacing: 0) {
                     // Header
                     headerSection
+                    
+                    // Trial banner (if in trial and not subscribed)
+                    if subscriptionManager.isTrialActive && !subscriptionManager.hasActiveSubscription {
+                        trialBanner
+                    }
                     
                     // Stats grid
                     statsGrid
@@ -37,7 +42,12 @@ struct HomeView: View {
             
             // Floating mic button
             MicButton {
-                showVoiceInput = true
+                // Check if user can access voice logging
+                if subscriptionManager.canAccessPremiumFeatures {
+                    showVoiceInput = true
+                } else {
+                    showPaywall = true
+                }
             }
             .padding(.bottom, Spacing.lg)
         }
@@ -49,9 +59,12 @@ struct HomeView: View {
             }
             loadData()
             
-            // Show tutorial on first launch
-            if !hasSeenTutorial {
-                showTutorial = true
+            // Show walkthrough on first launch (after onboarding)
+            if !hasSeenWalkthrough {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    showWalkthrough = true
+                    hasSeenWalkthrough = true
+                }
             }
         }
         .onReceive(repository.objectWillChange) { _ in
@@ -67,16 +80,8 @@ struct HomeView: View {
             .presentationDetents([.height(420)])
             .presentationDragIndicator(.hidden)
         }
-        .fullScreenCover(isPresented: $showTutorial) {
-            TutorialView(hasSeenTutorial: $hasSeenTutorial) {
-                // After tutorial, show walkthrough
-                if !hasSeenWalkthrough {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        showWalkthrough = true
-                        hasSeenWalkthrough = true
-                    }
-                }
-            }
+        .sheet(isPresented: $showPaywall) {
+            PaywallView()
         }
         .overlay {
             if showWalkthrough {
@@ -86,6 +91,37 @@ struct HomeView: View {
     }
     
     // MARK: - Sections
+    
+    private var trialBanner: some View {
+        Button {
+            showPaywall = true
+        } label: {
+            HStack {
+                Image(systemName: "clock.fill")
+                    .foregroundColor(.orange)
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Free Trial")
+                        .font(AppFonts.labelLarge())
+                        .foregroundColor(AppColors.textDark)
+                    Text("\(subscriptionManager.trialDaysRemaining) days left")
+                        .font(AppFonts.bodySmall())
+                        .foregroundColor(AppColors.textSoft)
+                }
+                
+                Spacer()
+                
+                Text("Upgrade")
+                    .font(AppFonts.labelLarge())
+                    .foregroundColor(AppColors.primary)
+            }
+            .padding(Spacing.md)
+            .background(Color.orange.opacity(0.1))
+            .cornerRadius(12)
+        }
+        .buttonStyle(.plain)
+        .padding(.bottom, Spacing.md)
+    }
     
     private var headerSection: some View {
         HStack {

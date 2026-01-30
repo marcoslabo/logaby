@@ -28,58 +28,135 @@ Deno.serve(async (req) => {
             );
         }
 
-        // Build prompt for Claude
-        const prompt = `You are a baby activity log parser. Parents speak naturally to log their baby's activities. Understand their INTENT, not just exact words. Return ONLY valid JSON.
+        // Build comprehensive prompt for Claude
+        const prompt = `You are a baby activity log parser for exhausted parents. They speak naturally (often while holding a crying baby). Understand their INTENT, not just exact words. Return ONLY valid JSON.
 
 Input: "${voice_input}"
 
-Activity types to detect:
-- feeding: bottle feeding with oz amount
+ACTIVITY TYPES:
+- feeding: bottle feeding with oz/ml amount
 - nursing: breastfeeding with duration and side(s)
 - diaper: diaper change (wet/dirty/mixed)
-- sleep_start: baby is going to sleep NOW
+- sleep_start: baby starting sleep NOW
 - sleep_end: baby just woke up
-- sleep_completed: a nap that already happened with start AND end times
-- weight: baby's weight measurement
-- pumping: breast pumping with oz and side
+- sleep_completed: past nap with BOTH start AND end times
+- weight: baby's weight
+- pumping: breast pumping
 
-JSON schema (omit fields that don't apply):
+JSON SCHEMA (omit fields that don't apply):
 {
   "type": string,
-  "amount_oz": number,
+  "amount_oz": number (if user says oz),
+  "amount_ml": number (if user says ml - return the raw ml number),
   "duration_minutes": number,
   "side": "left" | "right" | "both",
   "content": "formula" | "breastmilk",
   "diaper_type": "wet" | "dirty" | "mixed",
   "weight_lbs": number,
-  "start_hour": number (0-23),
+  "start_hour": number (0-23, for time ranges),
   "start_minute": number,
-  "end_hour": number (0-23),
-  "end_minute": number
+  "end_hour": number (0-23, for time ranges),
+  "end_minute": number,
+  "at_hour": number (0-23, for "at 2pm" specific times),
+  "at_minute": number,
+  "hours_ago": number,
+  "minutes_ago": number,
+  "is_pm": boolean (true if PM explicitly stated)
 }
 
-SLEEP RULES (important!):
-- "going to sleep", "putting down", "starting nap" → sleep_start
-- "woke up", "is awake", "nap ended" → sleep_end  
-- "slept from X to Y", "napped X to Y" (BOTH times given) → sleep_completed with start_hour AND end_hour
-- If someone says "slept" in past tense with both times, that's sleep_completed!
+AMOUNT RULES:
+- "4 oz" → amount_oz: 4
+- "300 ml" → amount_ml: 300 (NOT amount_oz!)
+- Always use the unit the user specified
 
-NATURAL LANGUAGE - understand these variations:
-Feeding: "ate 3 oz", "drank a bottle", "had 4 ounces of formula", "gave her 2oz", "she ate"
-Nursing: "nursed 15 min", "breastfed both sides", "fed from the left", "latched for 20 minutes"
-Diaper: "poopy diaper", "wet one", "changed him", "dirty diaper", "number two"
-Sleep: "she's down", "taking a nap", "just woke up", "slept 2 hours", "napped from 1 to 3"
-Weight: "weighs 8 lbs 6 oz", "came in at 9 pounds", "weight check 8.5 lbs"
-Pumping: "pumped 4 oz", "expressed 3 ounces from left"
+UNIT CONVERSION (CRITICAL - DO THIS FIRST!):
+- ml to oz conversion: divide by 30
+- "50 ml" → amount_oz: 1.7 (50 ÷ 30)
+- "100 ml" → amount_oz: 3.3 (100 ÷ 30)
+- "150 ml" → amount_oz: 5.0 (150 ÷ 30)
+- "300 ml" → amount_oz: 10.0 (300 ÷ 30)
+- NEVER return the ml number as oz!
 
-Examples:
-"she ate 2 oz" → {"type":"feeding","amount_oz":2}
-"nursed both sides for 15 mins" → {"type":"nursing","duration_minutes":15,"side":"both"}
+TIME RULES (CRITICAL! - ALWAYS extract time if mentioned):
+- "at 2:20 PM" → at_hour: 14, at_minute: 20
+- "at 3pm" → at_hour: 15, at_minute: 0
+- "at 10am" → at_hour: 10, at_minute: 0
+- "at 12:50 AM" → at_hour: 0, at_minute: 50 (12 AM = midnight = hour 0)
+- "at 1:30 AM" → at_hour: 1, at_minute: 30
+- "at 5am" → at_hour: 5, at_minute: 0
+- "2 hours ago" → hours_ago: 2
+- "30 minutes ago" / "30 min ago" → minutes_ago: 30
+- "from 2 to 3:30 PM" → start_hour: 14, end_hour: 15, end_minute: 30
+- If user mentions a TIME, you MUST include at_hour in the response!
+
+═══ FEEDING (Bottle) ═══
+All mean bottle feeding:
+- "4 oz", "4 ounces", "four ounces", "120 ml"
+- "ate 3 oz", "drank 4 oz", "had 2 ounces"
+- "she ate", "he drank", "baby had", "gave her 3oz"
+- "finished a bottle", "gave him a bottle"
+- "fed her 4oz of formula", "fed him breastmilk"
+- "ate 4 oz at 2pm" → include at_hour: 14
+
+═══ NURSING (Breastfeeding) ═══
+Key words: nursed, nursing, nurse, breastfed, breastfeeding, latched, latch
+- "nursed for 15 mins", "nursed 20 minutes"
+- "breastfed both sides", "fed from left breast"
+- "nursing right side", "latched left for 10 min"
+- "she nursed", "he breastfed"
+- "nurse at 2pm" → at_hour: 14
+- "nursed from 2 to 2:30pm" → duration calculated from range
+- "nursed 30 min ago" → minutes_ago: 30
+- Default side: "both" if not specified
+
+═══ DIAPER ═══
+wet: "wet diaper", "just wet", "pee diaper", "number one", "peed"
+dirty: "poopy diaper", "dirty diaper", "poop", "number two", "pooped", "💩"
+mixed: "wet and dirty", "both", "pee and poop"
+- "changed her", "changed his diaper" → default wet
+- "diaper change" → default wet
+- "messy diaper" → dirty
+
+═══ SLEEP ═══
+sleep_start: "going to sleep", "going down", "putting down", "starting nap", "she's out", "he's down", "down for a nap", "sleeping now"
+- "started sleeping at 4:30" → sleep_start with at_hour: 16, at_minute: 30
+- "went down at 2pm" → sleep_start with at_hour: 14
+- "fell asleep 30 min ago" → sleep_start with minutes_ago: 30
+sleep_end: "woke up", "just woke", "is awake", "up from nap", "waking up", "awake now"
+- "woke up at 3pm" → sleep_end with at_hour: 15
+sleep_completed (MUST have BOTH times): 
+- "slept from 10 to 2", "napped 1 to 3pm"
+- "slept 10am to 2pm" → start_hour: 10, end_hour: 14
+
+═══ WEIGHT ═══
+- "8 lbs 6 oz" → 8.375 lbs
+- "8 pounds 6 ounces" → 8.375 lbs
+- "weighs 9 pounds", "weight is 8.5 lbs"
+- "came in at 9 lbs", "measured 8 pounds"
+
+═══ PUMPING ═══
+Key words: pumped, pumping, pump, expressed
+- "pumped 4 oz", "pumped 4 ounces from left"
+- "expressed 3oz from right breast"
+- "pump session 5oz both sides"
+- "pump 60 ml" → amount_ml: 60 (NOT amount_oz!)
+
+EXAMPLES:
+"4 oz" → {"type":"feeding","amount_oz":4}
+"300 ml formula" → {"type":"feeding","amount_ml":300,"content":"formula"}
+"she ate 2 oz at 2pm" → {"type":"feeding","amount_oz":2,"at_hour":14,"at_minute":0}
+"nursed at 2:20 PM" → {"type":"nursing","at_hour":14,"at_minute":20,"side":"both"}
+"breastfed left side 15 min" → {"type":"nursing","duration_minutes":15,"side":"left"}
+"nursed from 2 to 3pm" → {"type":"nursing","start_hour":14,"end_hour":15}
+"nursed 30 min ago" → {"type":"nursing","minutes_ago":30,"side":"both"}
 "poopy diaper" → {"type":"diaper","diaper_type":"dirty"}
-"little one is down for a nap" → {"type":"sleep_start"}
-"she woke up" → {"type":"sleep_end"}
-"slept from 10am to 2pm" → {"type":"sleep_completed","start_hour":10,"start_minute":0,"end_hour":14,"end_minute":0}
-"baby weighs 8 lbs 6 oz" → {"type":"weight","weight_lbs":8.375}`;
+"wet diaper at 1pm" → {"type":"diaper","diaper_type":"wet","at_hour":13}
+"she's down" → {"type":"sleep_start"}
+"woke up" → {"type":"sleep_end"}
+"slept from 10am to 2pm" → {"type":"sleep_completed","start_hour":10,"end_hour":14}
+"napped 1 to 3" → {"type":"sleep_completed","start_hour":13,"end_hour":15}
+"8 lbs 6 oz" → {"type":"weight","weight_lbs":8.375}
+"pumped 4oz left" → {"type":"pumping","amount_oz":4,"side":"left"}`;
 
         // Call Claude API
         const claudeResponse = await fetch("https://api.anthropic.com/v1/messages", {

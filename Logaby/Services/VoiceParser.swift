@@ -56,23 +56,30 @@ struct VoiceParser {
         
         // 2. Check for weight EARLY (before feeding - "oz" conflicts)
         //    "8 lbs 6 oz" should be weight, not feeding
-        if WeightParser.matches(normalizedText),
-           let weight = WeightParser.parse(normalizedText, timestamp: Date()) {
-            return .weight(weight)
+        if WeightParser.matches(normalizedText) {
+            let (timestamp, cleanedText) = TimeExtractor.extract(from: normalizedText)
+            if let weight = WeightParser.parse(cleanedText, timestamp: timestamp) {
+                return .weight(weight)
+            }
         }
         
         // 3. Check for pumping EARLY (before feeding - "breast" conflicts)
         //    "pumped from left breast 2oz" should be pumping, not nursing
-        if PumpingParser.matches(normalizedText),
-           let pumping = PumpingParser.parse(normalizedText, timestamp: Date()) {
-            return .pumping(pumping)
+        if PumpingParser.matches(normalizedText) {
+            let (timestamp, cleanedText) = TimeExtractor.extract(from: normalizedText)
+            if let pumping = PumpingParser.parse(cleanedText, timestamp: timestamp) {
+                return .pumping(pumping)
+            }
         }
         
-        // 4. Check for feeding with time range BEFORE extracting time
-        //    e.g., "breastfed from 2 to 3:30 PM" has its own time range parsing
-        if FeedingParser.matches(normalizedText),
-           let feeding = FeedingParser.parse(normalizedText, timestamp: Date()) {
-            return .feeding(feeding)
+        // 4. Check for feeding - extract time first for "nurse at 2:20 PM" type inputs
+        //    Note: Time ranges like "from 2 to 3:30 PM" are handled internally by FeedingParser
+        if FeedingParser.matches(normalizedText) {
+            // Extract time (e.g., "at 2:20 PM" -> timestamp, "nurse" -> remaining text)
+            let (timestamp, cleanedText) = TimeExtractor.extract(from: normalizedText)
+            if let feeding = FeedingParser.parse(cleanedText, timestamp: timestamp) {
+                return .feeding(feeding)
+            }
         }
         
         // 5. Extract time reference (e.g., "at 2pm", "30 minutes ago")
