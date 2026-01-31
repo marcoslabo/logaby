@@ -1340,3 +1340,101 @@ footer a:hover {
         font-size: 3rem;
     }
 }
+
+/* App Showcase Section */
+.app-showcase {
+    padding: 80px 24px;
+    background: linear-gradient(180deg, var(--cream) 0%, #f5f5f5 100%);
+}
+
+.showcase-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 24px;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 0;
+}
+
+.phone-showcase {
+    text-align: center;
+    transition: transform 0.4s ease;
+}
+
+.phone-showcase:hover {
+    transform: translateY(-10px);
+}
+
+.phone-showcase.featured {
+    transform: scale(1.1);
+    z-index: 2;
+}
+
+.phone-showcase.featured:hover {
+    transform: scale(1.1) translateY(-10px);
+}
+
+.phone-mockup-showcase {
+    position: relative;
+}
+
+.phone-bezel {
+    background: #1a1a1a;
+    border-radius: 40px;
+    padding: 12px;
+    box-shadow:
+        0 25px 50px rgba(0, 0, 0, 0.25),
+        0 0 0 2px #333,
+        inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.phone-notch-small {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 24px;
+    background: #1a1a1a;
+    border-radius: 0 0 16px 16px;
+    z-index: 10;
+}
+
+.phone-screenshot {
+    width: 200px;
+    height: auto;
+    border-radius: 28px;
+    display: block;
+}
+
+.phone-caption {
+    margin-top: 16px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-soft);
+}
+
+/* Responsive for App Showcase */
+@media (max-width: 768px) {
+    .showcase-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 32px;
+    }
+
+    .phone-showcase.featured {
+        transform: scale(1);
+        order: -1;
+    }
+
+    .phone-showcase.featured:hover {
+        transform: translateY(-10px);
+    }
+
+    .phone-screenshot {
+        width: 180px;
+    }
+}
